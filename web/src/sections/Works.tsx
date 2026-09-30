@@ -22,13 +22,12 @@ export function Works() {
 
   return (
     <section id="works" className="section works" aria-labelledby="works-title">
-      <div className="safe-x section__head">
+      <div className="safe-x works__head">
         <h2 id="works-title" className="section__title font-display">
-          Работы
+          Работы <span className="works__count">{works.length}</span>
         </h2>
-        <p className="section__lead">
-          Форма каждой карточки повторяет длину ногтей на фото: от короткого квадрата до стилетов. Фото с картинками рядом это мудборды:
-          клиентка приносит идею, мастер переводит её в дизайн.
+        <p className="works__lead">
+          Форма карточки повторяет длину ногтей на фото. Фото с картинками рядом это мудборды: клиентка приносит идею, мастер переводит её в дизайн.
         </p>
       </div>
 

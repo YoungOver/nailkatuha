@@ -3,11 +3,11 @@ import { studio } from '@/content/studio'
 export function Services() {
   return (
     <section id="services" className="section services" aria-labelledby="services-title">
-      <div className="safe-x section__head">
+      <div className="safe-x services__head">
         <h2 id="services-title" className="section__title font-display">
           Что делаем
         </h2>
-        <p className="section__lead">Каждая услуга расписана по шагам, чтобы вы заранее знали, что будет происходить с ногтями.</p>
+        <p className="services__lead">Каждая услуга расписана по шагам, чтобы вы заранее знали, что будет с ногтями.</p>
       </div>
 
       <div className="safe-x">

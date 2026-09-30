@@ -1,13 +1,18 @@
-import { formatDuration, formatRub, priceGroups, tidy } from '@/content/prices'
+import { formatDuration, formatRub, priceGroups, prices, tidy } from '@/content/prices'
+
+const low = Math.min(...prices.map((p) => p.priceRub))
+const high = Math.max(...prices.map((p) => p.priceRub))
 
 export function Prices() {
   return (
     <section id="prices" className="section prices" aria-labelledby="prices-title">
-      <div className="safe-x section__head">
+      <div className="safe-x prices__head">
         <h2 id="prices-title" className="section__title font-display">
           Цены
         </h2>
-        <p className="section__lead">Снятие уже входит в покрытие и наращивание. Нажмите на строку, чтобы записаться на эту услугу.</p>
+        <p className="prices__range font-display">
+          от {formatRub(low)} до {formatRub(high)}
+        </p>
       </div>
 
       <div className="safe-x prices__groups">
@@ -34,6 +39,7 @@ export function Prices() {
           </div>
         ))}
       </div>
+      <p className="safe-x prices__note">Снятие старого покрытия уже входит в покрытие и наращивание. Нажмите на строку, чтобы записаться на эту услугу.</p>
     </section>
   )
 }
