@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "category": "Снятие",
+    "categoryOrder": 0,
+    "name": "Маникюр без покрытия",
+    "description": "Cнятие, гигиенический маникюр",
+    "priceRub": 1000,
+    "durationMin": 60,
+    "order": 0
+  },
+  {
+    "id": 2,
+    "category": "Покрытие натуральные ногти",
+    "categoryOrder": 1,
+    "name": "длина 1-2",
+    "description": "(однотон)",
+    "priceRub": 2000,
+    "durationMin": 120,
+    "order": 1
+  },
+  {
+    "id": 3,
+    "category": "Покрытие натуральные ногти",
+    "categoryOrder": 1,
+    "name": "длина 1-2 + дизайн",
+    "description": "снятие + покрытие + дизайн",
+    "priceRub": 2500,
+    "durationMin": 120,
+    "order": 2
+  },
+  {
+    "id": 6,
+    "category": "Наращивание/коррекция",
+    "categoryOrder": 2,
+    "name": "длина 3-5",
+    "description": "коррекция/наращивание длина 3–5 (1.5–2 см)",
+    "priceRub": 2800,
+    "durationMin": 150,
+    "order": 3
+  },
+  {
+    "id": 4,
+    "category": "Наращивание/коррекция",
+    "categoryOrder": 2,
+    "name": "длина 3-5 + дизайн",
+    "description": "коррекция/наращивание длина 3-5 + дизайн",
+    "priceRub": 3200,
+    "durationMin": 120,
+    "order": 4
+  },
+  {
+    "id": 7,
+    "category": "Наращивание/коррекция",
+    "categoryOrder": 2,
+    "name": "длина 6-8",
+    "description": "коррекция/наращивание длина 6–8 (2.5–3 см)",
+    "priceRub": 3100,
+    "durationMin": 180,
+    "order": 5
+  },
+  {
+    "id": 8,
+    "category": "Наращивание/коррекция",
+    "categoryOrder": 2,
+    "name": "длина 6-8 + дизайн",
+    "description": "коррекция/наращивание длина 6–8 (2.5–3 см) + дизайн",
+    "priceRub": 3600,
+    "durationMin": 120,
+    "order": 6
+  },
+  {
+    "id": 5,
+    "category": "Наращивание/коррекция",
+    "categoryOrder": 2,
+    "name": "длина 8+",
+    "description": "коррекция/наращивание длина больше 8 (3,5см+)",
+    "priceRub": 3600,
+    "durationMin": 180,
+    "order": 7
+  },
+  {
+    "id": 10,
+    "category": "Наращивание/коррекция",
+    "categoryOrder": 2,
+    "name": "длина 8+ +дизайн",
+    "description": "коррекция/наращивание длина больше 8 (3,5см+) + дизайн",
+    "priceRub": 4200,
+    "durationMin": 180,
+    "order": 8
+  }
+]
