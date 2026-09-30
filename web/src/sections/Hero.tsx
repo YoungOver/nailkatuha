@@ -98,9 +98,6 @@ export function Hero() {
           <p className="hero__master">«{studio.masterLine}»</p>
           <div className="hero__actions">
             <LacquerButton href="#booking">Записаться на окошко</LacquerButton>
-            <LacquerButton href="#try-on" tone="glass">
-              Примерить на свои руки
-            </LacquerButton>
           </div>
           <LacquerPicker />
         </div>
