@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from 'next'
-import { Golos_Text, Unbounded } from 'next/font/google'
+import { Golos_Text, Jost } from 'next/font/google'
 import { prices } from '@/content/prices'
 import { LACQUERS, textOn } from '@/fx/lacquer'
 import { studio } from '@/content/studio'
 import './globals.css'
 
-const display = Unbounded({ subsets: ['latin', 'cyrillic'], variable: '--font-display', display: 'swap' })
+const display = Jost({ subsets: ['latin', 'cyrillic'], variable: '--font-display', display: 'swap' })
 const body = Golos_Text({ subsets: ['latin', 'cyrillic'], variable: '--font-body', display: 'swap' })
 
 export const metadata: Metadata = {
