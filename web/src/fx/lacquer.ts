@@ -1,6 +1,6 @@
-import { smokeBus } from './fluid/bus'
-
 export type Lacquer = { id: string; name: string; hex: string }
+export type Finish = 'gloss' | 'matte' | 'chrome' | 'cateye'
+export type Shape = 'almond' | 'square' | 'stiletto' | 'coffin'
 
 /* Shades taken from the master's own moodboards: cherries, chocolate, plums, sakura, chrome. */
 export const LACQUERS: Lacquer[] = [
@@ -14,9 +14,25 @@ export const LACQUERS: Lacquer[] = [
   { id: 'lime', name: 'Лайм', hex: '#d7ff3a' },
 ]
 
+export const FINISHES: { id: Finish; name: string }[] = [
+  { id: 'gloss', name: 'Глянец' },
+  { id: 'cateye', name: 'Кошачий глаз' },
+  { id: 'chrome', name: 'Хром' },
+  { id: 'matte', name: 'Матовый' },
+]
+
+export const SHAPES: { id: Shape; name: string }[] = [
+  { id: 'almond', name: 'Миндаль' },
+  { id: 'square', name: 'Квадрат' },
+  { id: 'coffin', name: 'Балерина' },
+  { id: 'stiletto', name: 'Стилет' },
+]
+
 const INK = '#1a0710'
 const MILK = '#f3ede7'
 const KEY = 'nailkatuha:lacquer'
+const FINISH_KEY = 'nailkatuha:finish'
+const SHAPE_KEY = 'nailkatuha:shape'
 
 function channel(v: number) {
   const c = v / 255
@@ -37,9 +53,61 @@ export function textOn(hex: string) {
   return contrast(hex, INK) >= contrast(hex, MILK) ? INK : MILK
 }
 
-export function rgb01(hex: string): [number, number, number] {
-  const n = parseInt(hex.slice(1), 16)
-  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255]
+type State = { lacquer: Lacquer; finish: Finish; shape: Shape }
+type Listener = (s: State) => void
+
+let state: State = { lacquer: LACQUERS[0], finish: 'gloss', shape: 'almond' }
+const listeners = new Set<Listener>()
+
+function read<T>(key: string, parse: (v: string | null) => T): T {
+  try {
+    return parse(localStorage.getItem(key))
+  } catch {
+    return parse(null)
+  }
+}
+
+function write(key: string, value: string) {
+  try {
+    localStorage.setItem(key, value)
+  } catch {}
+}
+
+/** Shared lacquer state: the swatches write it, the page colours and the 3D tips read it. */
+export const lacquerStore = {
+  get: () => state,
+  subscribe(l: Listener) {
+    listeners.add(l)
+    return () => {
+      listeners.delete(l)
+    }
+  },
+  restore() {
+    state = {
+      lacquer: read(KEY, (id) => LACQUERS.find((l) => l.id === id) ?? LACQUERS[0]),
+      finish: read(FINISH_KEY, (f) => (FINISHES.some((x) => x.id === f) ? (f as Finish) : 'gloss')),
+      shape: read(SHAPE_KEY, (v) => (SHAPES.some((x) => x.id === v) ? (v as Shape) : 'almond')),
+    }
+    paint(state.lacquer)
+    for (const l of listeners) l(state)
+    return state
+  },
+  setLacquer(lacquer: Lacquer, origin?: { x: number; y: number }) {
+    write(KEY, lacquer.id)
+    state = { ...state, lacquer }
+    repaint(lacquer, origin)
+    for (const l of listeners) l(state)
+  },
+  setFinish(finish: Finish) {
+    write(FINISH_KEY, finish)
+    state = { ...state, finish }
+    for (const l of listeners) l(state)
+  },
+  setShape(shape: Shape) {
+    write(SHAPE_KEY, shape)
+    state = { ...state, shape }
+    for (const l of listeners) l(state)
+  },
 }
 
 function paint(l: Lacquer) {
@@ -49,42 +117,19 @@ function paint(l: Lacquer) {
   root.dataset.lacquer = l.id
 }
 
-export function savedLacquer(): Lacquer {
-  try {
-    const id = localStorage.getItem(KEY)
-    return LACQUERS.find((l) => l.id === id) ?? LACQUERS[0]
-  } catch {
-    return LACQUERS[0]
-  }
-}
-
-/** Repaints the site in a new lacquer; the change spreads from the click like a drop of polish. */
-export function applyLacquer(l: Lacquer, origin?: { x: number; y: number }) {
-  try {
-    localStorage.setItem(KEY, l.id)
-  } catch {}
-
+/** The page accent changes with a spreading circle from the click, like a drop of polish. */
+function repaint(l: Lacquer, origin?: { x: number; y: number }) {
   const doc = document as Document & { startViewTransition?: (cb: () => void) => { ready: Promise<void> } }
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
   if (!doc.startViewTransition || !origin || reduced) {
     paint(l)
-  } else {
-    const r = Math.hypot(Math.max(origin.x, innerWidth - origin.x), Math.max(origin.y, innerHeight - origin.y))
-    doc.startViewTransition(() => paint(l)).ready.then(() => {
-      document.documentElement.animate(
-        { clipPath: [`circle(0px at ${origin.x}px ${origin.y}px)`, `circle(${r}px at ${origin.x}px ${origin.y}px)`] },
-        { duration: 700, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', pseudoElement: '::view-transition-new(root)' },
-      )
-    })
+    return
   }
-
-  const [cr, cg, cb] = rgb01(l.hex)
-  for (let i = 0; i < 3; i++) {
-    const a = Math.random() * Math.PI * 2
-    smokeBus.emit({ x: 0.2 + Math.random() * 0.6, y: 0.2 + Math.random() * 0.6, dx: Math.cos(a) * 40, dy: Math.sin(a) * 40, color: [cr, cg, cb] })
-  }
-}
-
-export function restoreLacquer() {
-  paint(savedLacquer())
+  const r = Math.hypot(Math.max(origin.x, innerWidth - origin.x), Math.max(origin.y, innerHeight - origin.y))
+  doc.startViewTransition(() => paint(l)).ready.then(() => {
+    document.documentElement.animate(
+      { clipPath: [`circle(0px at ${origin.x}px ${origin.y}px)`, `circle(${r}px at ${origin.x}px ${origin.y}px)`] },
+      { duration: 650, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', pseudoElement: '::view-transition-new(root)' },
+    )
+  })
 }

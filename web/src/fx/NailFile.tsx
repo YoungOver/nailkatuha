@@ -1,18 +1,16 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { smokeBus } from './fluid/bus'
-import { rgb01 } from './lacquer'
 import { file as fileSound } from './sound'
 
 const INTERACTIVE = 'a, button, [role="button"], summary, label'
 const TEXT_ENTRY = 'input, textarea, select, [contenteditable="true"]'
 
 /*
- * The cursor is an emery board. It trails the pointer on a critically damped
- * spring, leans with horizontal speed, and when it rests on something
- * clickable it files it: a short oscillation along its own axis, a pinch of
- * dust and the filing sound.
+ * The cursor is an emery board. Its tip sits exactly under the pointer (no
+ * spring: a cursor that trails the hand reads as lag); only the lean follows
+ * horizontal speed. On something clickable it files it: a short oscillation
+ * along its own axis, a pinch of dust and the filing sound.
  */
 export function NailFile() {
   const rootRef = useRef<HTMLDivElement>(null)
@@ -25,9 +23,8 @@ export function NailFile() {
     const dustLayer = dustRef.current!
     document.documentElement.classList.add('has-file-cursor')
 
-    const target = { x: innerWidth / 2, y: innerHeight / 2 }
-    const pos = { ...target }
-    const vel = { x: 0, y: 0 }
+    const pos = { x: innerWidth / 2, y: innerHeight / 2 }
+    let speedX = 0
     let angle = -38
     let filing = false
     let hidden = true
@@ -54,39 +51,33 @@ export function NailFile() {
           { duration: 520 + Math.random() * 260, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
         ).onfinish = () => p.remove()
       }
-      const [r, g, b] = rgb01(color.startsWith('#') ? color : '#ff4f8b')
-      smokeBus.emit({ x: x / innerWidth, y: y / innerHeight, dx: (Math.random() - 0.5) * 30, dy: -20, color: [r, g, b] })
     }
 
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame)
       const dt = Math.min((now - prev) / 1000, 1 / 30)
       prev = now
-      const k = 520
-      const c = 2 * Math.sqrt(k)
-      vel.x += ((target.x - pos.x) * k - vel.x * c) * dt
-      vel.y += ((target.y - pos.y) * k - vel.y * c) * dt
-      pos.x += vel.x * dt
-      pos.y += vel.y * dt
-
-      const lean = Math.max(-22, Math.min(22, vel.x * 0.02))
-      angle += (-38 + lean - angle) * Math.min(1, dt * 12)
+      speedX *= Math.exp(-dt * 10)
+      const lean = Math.max(-22, Math.min(22, speedX * 0.02))
+      angle += (-38 + lean - angle) * Math.min(1, dt * 14)
       const saw = filing ? Math.sin(now / 38) * 5 : 0
       root.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0) rotate(${angle}deg) translateY(${saw}px)`
 
-      if (filing && now - lastDust > 140 && Math.abs(vel.x) + Math.abs(vel.y) < 900) {
+      if (filing && now - lastDust > 140 && Math.abs(speedX) < 900) {
         lastDust = now
         dust(pos.x, pos.y)
       }
     }
 
+    let lastT = 0
     const onMove = (e: PointerEvent) => {
-      target.x = e.clientX
-      target.y = e.clientY
+      const dtMove = (e.timeStamp - lastT) / 1000
+      if (!hidden && dtMove > 0 && dtMove < 0.1) speedX = speedX * 0.6 + ((e.clientX - pos.x) / dtMove) * 0.4
+      lastT = e.timeStamp
+      pos.x = e.clientX
+      pos.y = e.clientY
       if (hidden) {
         hidden = false
-        pos.x = target.x
-        pos.y = target.y
         root.dataset.visible = ''
       }
     }
