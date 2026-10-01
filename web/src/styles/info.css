@@ -23,7 +23,7 @@
     gap: 1rem;
     padding: clamp(1.4rem, 2.5vw, 2.2rem);
     border-radius: 1.75rem;
-    background: rgb(16 13 20 / 0.72);
+    background: rgb(18 18 20 / 0.72);
     box-shadow: inset 0 0 0 1px var(--color-hairline);
     backdrop-filter: blur(14px);
   }
@@ -43,7 +43,7 @@
   .service__points li {
     position: relative;
     padding-left: 1.25rem;
-    color: rgb(245 240 235 / 0.84);
+    color: rgb(245 245 247 / 0.84);
   }
 
   /* a tiny almond nail as the bullet */
@@ -64,9 +64,31 @@
     }
   }
 
+  /* eyebrow and title on the left, the price range answers them on the right */
   .prices__head {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: end;
+  }
+
+  .prices__head > :not(.prices__range) {
+    grid-column: 1;
+  }
+
+  .prices__range {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: end;
+  }
+
+  @media (max-width: 699px) {
+    .prices__head {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .prices__range {
+      grid-column: 1;
+      grid-row: auto;
+    }
   }
 
   .prices__range {
@@ -84,7 +106,7 @@
   .prices__group {
     padding: clamp(1.2rem, 2.2vw, 2rem);
     border-radius: 1.75rem;
-    background: rgb(16 13 20 / 0.72);
+    background: rgb(18 18 20 / 0.72);
     box-shadow: inset 0 0 0 1px var(--color-hairline);
     backdrop-filter: blur(14px);
   }
@@ -231,50 +253,63 @@
     color: var(--color-mute);
   }
 
+  /* the frame has the image's own proportions, so Yandex's attribution is never cropped */
   .map {
     position: relative;
-    min-height: 24rem;
-    height: 100%;
+    aspect-ratio: 13 / 9;
+    align-self: center;
     border-radius: 1.75rem;
     overflow: hidden;
     background: var(--color-ink-2);
     box-shadow: inset 0 0 0 1px var(--color-hairline);
   }
 
-  /* the widget has no dark style: the whole map is inverted and the hue turned back, so water stays blue */
-  .map__canvas {
+  /* Yandex's static map has no dark style: the image is inverted and the hue turned back, so water stays blue */
+  .map__image {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    border: 0;
+    object-fit: cover;
     filter: invert(0.92) hue-rotate(180deg) brightness(0.95) contrast(0.9) saturate(0.7);
   }
 
-  /* only touch screens get the cover; a mouse wheel over the map scrolls the page anyway */
-  .map__cover {
-    display: none;
+  /* a drop of the chosen lacquer on the address, with a slow ring around it */
+  .map__pin {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 50%;
+    background: var(--color-lacquer);
+    box-shadow: 0 0 0 4px rgb(0 0 0 / 0.55), 0 0 24px var(--color-lacquer);
+    transform: translate(-50%, -50%);
   }
 
-  @media (pointer: coarse) {
-    .map__cover {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: end center;
-      padding-bottom: 1rem;
-      border: 0;
-      background: transparent;
-      font: inherit;
-      color: var(--color-milk);
-    }
+  .map__pin::after {
+    content: '';
+    position: absolute;
+    inset: -0.9rem;
+    border-radius: 50%;
+    border: 2px solid var(--color-lacquer);
+    opacity: 0;
+    animation: pin-ring 2.6s var(--ease-out) infinite;
+  }
 
-    .map__cover span {
-      padding: 0.55rem 1rem;
-      border-radius: 999px;
-      font-size: 0.9rem;
-      background: rgb(7 6 9 / 0.78);
-      box-shadow: inset 0 0 0 1px var(--color-hairline);
+  .map__open {
+    position: absolute;
+    left: 1rem;
+    bottom: 1rem;
+    background: rgb(0 0 0 / 0.7);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+
+  @media (prefers-reduced-motion: reduce) {
+    .map__pin::after {
+      animation: none;
     }
   }
 
@@ -290,7 +325,7 @@
     padding-top: clamp(3rem, 6vw, 5rem);
     padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
     border-top: 1px solid var(--color-hairline);
-    background: rgb(7 6 9 / 0.85);
+    background: rgb(0 0 0 / 0.85);
   }
 
   .footer__cols {
@@ -307,7 +342,7 @@
   }
 
   .footer a {
-    color: rgb(245 240 235 / 0.8);
+    color: rgb(245 245 247 / 0.8);
     text-decoration: none;
   }
 
@@ -325,7 +360,7 @@
     font-weight: 800;
     line-height: 0.85;
     letter-spacing: -0.06em;
-    background: linear-gradient(180deg, rgb(245 240 235 / 0.16), rgb(245 240 235 / 0.02));
+    background: linear-gradient(180deg, rgb(245 245 247 / 0.16), rgb(245 245 247 / 0.02));
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
@@ -335,5 +370,16 @@
     margin-top: 1.5rem;
     font-size: 0.85rem;
     color: var(--color-mute);
+  }
+}
+
+@keyframes pin-ring {
+  0% {
+    transform: scale(0.3);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
   }
 }

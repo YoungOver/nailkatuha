@@ -1,16 +1,22 @@
 @layer components {
   .section-title {
     font-size: var(--text-h2);
-    font-weight: 700;
-    line-height: 0.98;
-    letter-spacing: -0.04em;
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
   }
 
+  /* grey reading text with the point in white, the way Apple writes a product page */
   .section-lead {
-    max-width: 38rem;
+    max-width: 40rem;
     font-size: var(--text-lead);
-    line-height: 1.55;
-    color: rgb(245 240 235 / 0.78);
+    line-height: 1.5;
+    color: var(--color-mute);
+  }
+
+  .section-lead b {
+    font-weight: 600;
+    color: var(--color-milk);
   }
 
   .works {
@@ -111,7 +117,7 @@
     display: grid;
     justify-items: start;
     gap: 1rem;
-    color: rgb(245 240 235 / 0.8);
+    color: rgb(245 245 247 / 0.8);
   }
 
   .works__reset {
@@ -147,7 +153,7 @@
   }
 
   .lightbox::backdrop {
-    background: rgb(7 6 9 / 0.92);
+    background: rgb(0 0 0 / 0.92);
     backdrop-filter: blur(10px);
   }
 

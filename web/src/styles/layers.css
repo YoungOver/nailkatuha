@@ -116,7 +116,7 @@
   .layers__text span {
     min-height: 0;
     overflow: hidden;
-    color: rgb(245 240 235 / 0.75);
+    color: rgb(245 245 247 / 0.75);
     font-size: 0.98rem;
     line-height: 1.5;
     opacity: 0;

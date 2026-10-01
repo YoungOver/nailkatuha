@@ -37,6 +37,17 @@
     cursor: text;
   }
 
+  /* headlines in the Display cut, tight like Apple's; reading text stays in the Text cut */
+  h1,
+  h2,
+  h3,
+  .section-title,
+  .site-header__logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+  }
+
   ::selection {
     background: var(--color-lacquer);
     color: var(--on-lacquer, #1a0710);
@@ -57,6 +68,11 @@
   img {
     display: block;
     max-width: 100%;
+  }
+
+  /* Apple's rhythm: black sections alternate with graphite bands, the lacquer flow shows through the black ones */
+  :is(.works, .services, .booking) {
+    background: var(--color-ink-2);
   }
 
   /* sections past the pinned layers are laid out only when they come near, so the first screen starts sooner */
@@ -141,21 +157,21 @@
 @keyframes reveal-up {
   from {
     opacity: 0;
-    transform: translateY(56px);
+    transform: translateY(28px);
   }
 }
 
 @keyframes reveal-scale {
   from {
     opacity: 0;
-    transform: scale(0.86);
+    transform: scale(0.94);
   }
 }
 
 @keyframes reveal-left {
   from {
     opacity: 0;
-    transform: translateX(-48px);
+    transform: translateX(-24px);
   }
 }
 
