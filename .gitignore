@@ -8,3 +8,5 @@ build/
 web/AGENTS.md
 web/CLAUDE.md
 web/next-env.d.ts
+docs/shots/firefox-*
+docs/shots/webkit-*
