@@ -102,7 +102,7 @@ check('the phone is formatted while typing', (await page.locator('.booking__inpu
 await page.locator('.booking__consent').click()
 await page.locator('.booking__submit button').click()
 check('the visit is confirmed on the page, with no messenger', await until(page, () => document.querySelector('.booking__done h3')?.textContent === 'Вы записаны'))
-check('the map loads without an API key', (await page.locator('iframe.map__canvas[src*="map-widget"]').count()) === 1)
+check('the map is a still image, with no ad-carrying widget', (await page.locator('.map img.map__image').count()) === 1 && (await page.locator('.map iframe').count()) === 0)
 
 await scrollTo('#tryon')
 await page.locator('#tryon button', { hasText: 'Пример' }).click()

@@ -45,7 +45,8 @@ for (const [w, h, mobile] of VIEWPORTS) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, ...(engine === 'firefox' ? {} : { isMobile: mobile }), hasTouch: mobile, reducedMotion: 'no-preference' })
   const tab = await ctx.newPage()
   const errors = []
-  tab.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
+  /* errors from embedded third-party frames, like the map widget, are theirs to fix */
+  tab.on('console', (m) => m.type() === 'error' && (m.location().url ?? '').startsWith(base) && errors.push(m.text()))
   tab.on('pageerror', (e) => errors.push(String(e)))
   await tab.goto(base + page, { waitUntil: 'networkidle' })
   await tab.waitForTimeout(4000)
@@ -65,7 +66,8 @@ for (const [w, h, mobile] of VIEWPORTS) {
     await tab.evaluate(() => window.scrollTo(0, 0))
     await tab.waitForTimeout(500)
   }
-  const overflow = await tab.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+  /* a phone browser widens the layout to fit an overflowing child, so the window width is checked too */
+  const overflow = await tab.evaluate((w) => Math.max(document.documentElement.scrollWidth - window.innerWidth, window.innerWidth - w), w)
   const slug = page === '/' ? '' : page.replace(/\//g, '_').replace(/_+$/, '') + '-'
   const name = `${engine === 'chrome' ? '' : engine + '-'}${slug}${w}x${h}${full ? '-full' : ''}.png`
   await tab.screenshot({ path: join(outDir, name), fullPage: full })
