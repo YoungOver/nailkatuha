@@ -1,0 +1,401 @@
+@layer components {
+  /* reading sections sit on a calmer, slightly lifted ground so text never fights the flowing background */
+  .services,
+  .prices,
+  .contacts {
+    padding-block: clamp(4rem, 8vw, 7rem);
+  }
+
+  .services__head,
+  .prices__head {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .services__grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .service {
+    display: grid;
+    gap: 1rem;
+    padding: clamp(1.4rem, 2.5vw, 2.2rem);
+    border-radius: 1.75rem;
+    background: rgb(16 13 20 / 0.72);
+    box-shadow: inset 0 0 0 1px var(--color-hairline);
+    backdrop-filter: blur(14px);
+  }
+
+  .service__title {
+    font-size: var(--text-h3);
+    font-weight: 650;
+    letter-spacing: -0.025em;
+  }
+
+  .service__points {
+    list-style: none;
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .service__points li {
+    position: relative;
+    padding-left: 1.25rem;
+    color: rgb(245 240 235 / 0.84);
+  }
+
+  /* a tiny almond nail as the bullet */
+  .service__points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.42em;
+    width: 0.48rem;
+    height: 0.7rem;
+    border-radius: 50% 50% 0.12rem 0.12rem;
+    background: var(--color-lacquer);
+  }
+
+  @media (min-width: 800px) {
+    .services__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .prices__head {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+
+  .prices__range {
+    font-size: clamp(1.2rem, 0.9rem + 1.4vw, 2.2rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-lacquer);
+  }
+
+  .prices__groups {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .prices__group {
+    padding: clamp(1.2rem, 2.2vw, 2rem);
+    border-radius: 1.75rem;
+    background: rgb(16 13 20 / 0.72);
+    box-shadow: inset 0 0 0 1px var(--color-hairline);
+    backdrop-filter: blur(14px);
+  }
+
+  .prices__category {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-mute);
+  }
+
+  .prices__group ul {
+    list-style: none;
+  }
+
+  .price-line {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: baseline;
+    padding: 0.9rem 0;
+    color: var(--color-milk);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-hairline);
+    transition: color 0.2s;
+  }
+
+  .prices__group li:last-child .price-line {
+    border-bottom: 0;
+  }
+
+  .price-line__name {
+    display: grid;
+    gap: 0.15rem;
+    font-weight: 550;
+  }
+
+  .price-line__desc {
+    font-size: 0.88rem;
+    font-weight: 400;
+    color: var(--color-mute);
+  }
+
+  .price-line__value {
+    display: grid;
+    justify-items: end;
+    gap: 0.1rem;
+  }
+
+  .price-line__price {
+    font-size: 1.15rem;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+
+  .price-line__time {
+    font-size: 0.85rem;
+    color: var(--color-mute);
+    white-space: nowrap;
+  }
+
+  .price-line:hover .price-line__price,
+  .price-line:focus-visible .price-line__price {
+    color: var(--color-lacquer);
+  }
+
+  .prices__note {
+    margin-top: 1.25rem;
+    font-size: 0.92rem;
+    color: var(--color-mute);
+  }
+
+  @media (min-width: 900px) {
+    .prices__groups {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .prices__group:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .prices__group:last-child ul {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 2.5rem;
+    }
+
+    .prices__group:last-child li:nth-last-child(2) .price-line {
+      border-bottom: 0;
+    }
+  }
+
+  .booking {
+    padding-block: clamp(3rem, 6vw, 5rem);
+  }
+
+  .booking__panel {
+    display: grid;
+    gap: 2.5rem;
+    padding: clamp(1.75rem, 4vw, 4rem);
+    border-radius: 2.25rem;
+    background:
+      radial-gradient(80% 120% at 0% 0%, color-mix(in oklab, var(--color-lacquer) 32%, transparent), transparent 60%),
+      radial-gradient(60% 80% at 100% 100%, color-mix(in oklab, var(--color-lacquer) 16%, transparent), transparent 70%),
+      rgb(16 13 20 / 0.82);
+    box-shadow: inset 0 0 0 1px var(--color-hairline);
+    backdrop-filter: blur(16px);
+  }
+
+  .booking__intro {
+    display: grid;
+    justify-items: start;
+    gap: 1.25rem;
+  }
+
+  .booking__steps {
+    list-style: none;
+    display: grid;
+    counter-reset: step;
+  }
+
+  .booking__step {
+    position: relative;
+    padding: 0.3rem 0 1.8rem 3.6rem;
+    counter-increment: step;
+  }
+
+  .booking__step:last-child {
+    padding-bottom: 0;
+  }
+
+  /* the steps really are a sequence, so they are numbered and joined by one thread */
+  .booking__step::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    font-weight: 650;
+    color: var(--on-lacquer, #1a0710);
+    background: var(--color-lacquer);
+  }
+
+  .booking__step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 1.25rem;
+    top: 2.8rem;
+    bottom: 0.3rem;
+    width: 1.5px;
+    background: linear-gradient(var(--color-lacquer), var(--color-hairline));
+  }
+
+  .booking__step h3 {
+    font-size: 1.2rem;
+    font-weight: 650;
+    margin-bottom: 0.25rem;
+  }
+
+  .booking__step p {
+    color: rgb(245 240 235 / 0.72);
+  }
+
+  @media (min-width: 900px) {
+    .booking__panel {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      align-items: center;
+      gap: clamp(3rem, 6vw, 6rem);
+    }
+  }
+
+  .contacts__grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .contacts__info {
+    display: grid;
+    align-content: start;
+    gap: 1.1rem;
+  }
+
+  .contacts__address {
+    display: grid;
+    font-style: normal;
+    color: var(--color-mute);
+  }
+
+  .contacts__street {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-milk);
+  }
+
+  .contacts__metro {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .contacts__line {
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    background: #f58025;
+    box-shadow: 0 0 0 3px rgb(245 128 37 / 0.25);
+  }
+
+  .contacts__socials {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .contacts__note {
+    max-width: 34rem;
+    font-size: 0.8rem;
+    color: var(--color-mute);
+  }
+
+  .map {
+    position: relative;
+    min-height: 24rem;
+    height: 100%;
+    border-radius: 1.75rem;
+    overflow: hidden;
+    background: var(--color-ink-2);
+    box-shadow: inset 0 0 0 1px var(--color-hairline);
+  }
+
+  .map__canvas {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Yandex 2.1 has no dark style, so the tile layer is inverted and the hue turned back */
+  .map [class*='ground-pane'] {
+    filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.88) saturate(0.6);
+  }
+
+  .map__fallback {
+    position: absolute;
+    inset: auto 1.25rem 1.25rem;
+    color: var(--color-mute);
+  }
+
+  @media (min-width: 900px) {
+    .contacts__grid {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      align-items: stretch;
+    }
+  }
+
+  .footer {
+    container-type: inline-size;
+    padding-top: clamp(3rem, 6vw, 5rem);
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--color-hairline);
+    background: rgb(7 6 9 / 0.85);
+  }
+
+  .footer__cols {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .footer__cols nav,
+  .footer__contacts {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .footer a {
+    color: rgb(245 240 235 / 0.8);
+    text-decoration: none;
+  }
+
+  .footer a:hover {
+    color: var(--color-milk);
+  }
+
+  .footer__contacts {
+    color: var(--color-mute);
+  }
+
+  .footer__word {
+    margin-top: 3rem;
+    font-size: 17.5cqi;
+    font-weight: 800;
+    line-height: 0.85;
+    letter-spacing: -0.06em;
+    background: linear-gradient(180deg, rgb(245 240 235 / 0.16), rgb(245 240 235 / 0.02));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .footer__legal {
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--color-mute);
+  }
+}

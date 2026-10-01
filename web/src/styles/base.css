@@ -1,0 +1,186 @@
+@layer base {
+  html {
+    background: var(--color-ink);
+    color: var(--color-milk);
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+    scroll-padding-top: 4.5rem;
+  }
+
+  body {
+    min-height: 100svh;
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    overflow-x: clip;
+  }
+
+  /* the emery-board cursor is a native cursor image (zero lag); see fx/cursor.ts */
+  html {
+    cursor: var(--cursor, auto);
+  }
+
+  a,
+  button,
+  [role='button'],
+  summary,
+  label {
+    cursor: var(--cursor-file, pointer);
+  }
+
+  input,
+  textarea,
+  [contenteditable='true'] {
+    cursor: text;
+  }
+
+  ::selection {
+    background: var(--color-lacquer);
+    color: var(--on-lacquer, #1a0710);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-lacquer);
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
+
+  main:focus {
+    outline: none;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* sections past the pinned layers are laid out only when they come near, so the first screen starts sooner */
+  :is(.works, .tryon, .reasons, .services, .prices, .booking, .contacts) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 60rem;
+  }
+}
+
+@layer utilities {
+  .wrap {
+    padding-left: max(1.25rem, env(safe-area-inset-left));
+    padding-right: max(1.25rem, env(safe-area-inset-right));
+  }
+
+  /* on very wide screens content stays within 1520px instead of stretching to the edges */
+  @media (min-width: 900px) {
+    .wrap {
+      padding-left: max(3rem, env(safe-area-inset-left), calc((100% - 1520px) / 2));
+      padding-right: max(3rem, env(safe-area-inset-right), calc((100% - 1520px) / 2));
+    }
+  }
+
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* first Tab stop: jumps over the header links straight to the page */
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: calc(0.75rem + env(safe-area-inset-top));
+  left: 1rem;
+  padding: 0.7rem 1.1rem;
+  border-radius: 999px;
+  background: var(--color-milk);
+  color: var(--color-ink);
+  font-weight: 600;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/*
+ * Scroll reveals run on the compositor through scroll-driven animations, so they
+ * cost nothing on the main thread. Browsers without them simply show the content.
+ * With reduced motion the elements only fade: nothing slides or scales.
+ */
+@supports (animation-timeline: view()) {
+  [data-reveal] {
+    animation: reveal-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 32%;
+  }
+
+  [data-reveal='scale'] {
+    animation-name: reveal-scale;
+    animation-range: entry 0% cover 45%;
+  }
+
+  [data-reveal='left'] {
+    animation-name: reveal-left;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal],
+    [data-reveal='scale'],
+    [data-reveal='left'] {
+      animation-name: reveal-fade;
+    }
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(56px);
+  }
+}
+
+@keyframes reveal-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+}
+
+@keyframes reveal-left {
+  from {
+    opacity: 0;
+    transform: translateX(-48px);
+  }
+}
+
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* the lacquer change is a circle of polish spreading from the click; reduced motion gets a plain crossfade */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: 0.25s ease both reveal-fade;
+  }
+
+  ::view-transition-old(root) {
+    animation-direction: reverse;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}

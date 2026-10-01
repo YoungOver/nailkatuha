@@ -1,0 +1,160 @@
+@layer components {
+  .tryon {
+    padding-block: clamp(4rem, 8vw, 7rem);
+  }
+
+  .tryon__grid {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .tryon__copy {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+  }
+
+  .tryon__copy .lacquer-picker {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .tryon__copy .lacquer-picker__caps,
+  .tryon__copy .lacquer-picker__row {
+    justify-content: start;
+  }
+
+  .tryon__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .tryon__actions button {
+    border: 0;
+    font-family: inherit;
+    font-size: 1rem;
+  }
+
+  .tryon__actions button:disabled {
+    opacity: 0.55;
+  }
+
+  .tryon__status {
+    min-height: 1.6em;
+    font-size: 0.95rem;
+    color: var(--color-lacquer);
+  }
+
+  .tryon__stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    border-radius: 2rem;
+    overflow: hidden;
+    background:
+      radial-gradient(70% 70% at 50% 40%, color-mix(in oklab, var(--color-lacquer) 18%, transparent), transparent 70%),
+      rgb(16 13 20 / 0.8);
+    box-shadow: inset 0 0 0 1px var(--color-hairline);
+  }
+
+  .tryon__video {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .tryon__canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .tryon__stage[data-mode='idle'] .tryon__canvas,
+  .tryon__stage[data-mode='loading'] .tryon__canvas {
+    display: none;
+  }
+
+  .tryon__hint {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    color: var(--color-mute);
+    font-size: 0.95rem;
+  }
+
+  .tryon__hint svg {
+    width: 4.5rem;
+    height: 4.5rem;
+    fill: none;
+    stroke: var(--color-lacquer);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .tryon__loading {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    border: 3px solid var(--color-hairline);
+    border-top-color: var(--color-lacquer);
+    animation: spin 0.9s linear infinite;
+  }
+
+  .tryon__save {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    backdrop-filter: blur(10px);
+  }
+
+  /* on a phone the picture comes right after the intro, so pressing a button shows its result without scrolling */
+  @media (max-width: 899px) {
+    .tryon__copy {
+      display: contents;
+    }
+
+    .tryon__grid {
+      gap: 1.1rem;
+    }
+
+    .tryon__copy .section-title,
+    .tryon__copy .section-lead {
+      order: 0;
+    }
+
+    .tryon__stage {
+      order: 1;
+    }
+
+    .tryon__actions {
+      order: 2;
+    }
+
+    .tryon__status {
+      order: 3;
+    }
+
+    .tryon__copy .lacquer-picker {
+      order: 4;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .tryon__grid {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: clamp(2.5rem, 5vw, 5rem);
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}

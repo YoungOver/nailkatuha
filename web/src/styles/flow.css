@@ -1,0 +1,18 @@
+/* fixed background coat; the gradient underneath is what browsers without WebGL2 keep */
+.flow {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100lvh;
+  pointer-events: none;
+  background:
+    radial-gradient(70% 60% at 68% 40%, color-mix(in oklab, var(--color-lacquer) 18%, transparent), transparent 70%),
+    var(--color-ink);
+  opacity: 0;
+  transition: opacity 1.4s var(--ease-out);
+}
+
+.flow[data-ready] {
+  opacity: 1;
+}

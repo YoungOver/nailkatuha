@@ -1,0 +1,126 @@
+@layer components {
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    padding-top: env(safe-area-inset-top);
+    transition: background-color 0.4s var(--ease-out);
+  }
+
+  .site-header[data-scrolled],
+  .site-header[data-open] {
+    background: rgb(7 6 9 / 0.66);
+    backdrop-filter: blur(18px) saturate(1.4);
+    box-shadow: 0 1px 0 var(--color-hairline);
+  }
+
+  .site-header__bar {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    height: 4.25rem;
+  }
+
+  .site-header__logo {
+    margin-right: auto;
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: -0.04em;
+    color: var(--color-milk);
+    text-decoration: none;
+  }
+
+  .site-header__logo span {
+    color: var(--color-lacquer);
+  }
+
+  .site-header__nav {
+    display: none;
+    gap: 0.25rem;
+  }
+
+  .site-header__nav a {
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: rgb(245 240 235 / 0.78);
+    text-decoration: none;
+    transition: color 0.2s, background-color 0.2s;
+  }
+
+  .site-header__nav a:hover,
+  .site-header__nav a[aria-current='true'] {
+    color: var(--color-milk);
+    background: rgb(245 240 235 / 0.08);
+  }
+
+  .site-header__cta {
+    display: none;
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .site-header__toggle {
+    min-height: 2.75rem;
+    padding: 0 1.1rem;
+    border: 0;
+    border-radius: 999px;
+    color: var(--color-milk);
+    font: inherit;
+    font-weight: 600;
+    background: rgb(245 240 235 / 0.08);
+    box-shadow: inset 0 0 0 1px var(--color-hairline);
+  }
+
+  .site-header__sheet {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100dvh - 4.25rem - env(safe-area-inset-top));
+    padding-top: 1.5rem;
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
+  }
+
+  .site-header__sheet[hidden] {
+    display: none;
+  }
+
+  .site-header__sheet nav {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .site-header__sheet nav a {
+    padding: 0.4rem 0;
+    font-size: clamp(2.2rem, 10vw, 3.2rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+    color: var(--color-milk);
+    text-decoration: none;
+  }
+
+  @media (max-width: 899px) {
+    .sound-toggle__label {
+      display: none;
+    }
+
+    .sound-toggle {
+      padding: 0 0.75rem;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .site-header__nav,
+    .site-header__cta {
+      display: flex;
+    }
+
+    .site-header__toggle,
+    .site-header__sheet {
+      display: none !important;
+    }
+  }
+}

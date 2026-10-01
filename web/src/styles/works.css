@@ -1,0 +1,248 @@
+@layer components {
+  .section-title {
+    font-size: var(--text-h2);
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+  }
+
+  .section-lead {
+    max-width: 38rem;
+    font-size: var(--text-lead);
+    line-height: 1.55;
+    color: rgb(245 240 235 / 0.78);
+  }
+
+  .works {
+    position: relative;
+    padding-block: clamp(5rem, 10vw, 9rem) clamp(4rem, 8vw, 7rem);
+  }
+
+  .works__head {
+    display: grid;
+    gap: 1.1rem;
+    margin-bottom: 2rem;
+  }
+
+  .works__count {
+    display: inline-block;
+    vertical-align: super;
+    margin-left: 0.1em;
+    font-size: 0.32em;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--color-lacquer);
+  }
+
+  .works__filters {
+    display: grid;
+    gap: 0.6rem;
+    margin-bottom: 2.25rem;
+  }
+
+  /* on a phone each filter group is one row that scrolls sideways and runs to the screen edges */
+  @media (max-width: 699px) {
+    .works__filters .chips {
+      margin-left: calc(-1 * max(1.25rem, env(safe-area-inset-left)));
+      margin-right: calc(-1 * max(1.25rem, env(safe-area-inset-right)));
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scrollbar-width: none;
+      scroll-padding-inline: max(1.25rem, env(safe-area-inset-left));
+      padding-inline: max(1.25rem, env(safe-area-inset-left)) max(1.25rem, env(safe-area-inset-right));
+      mask-image: linear-gradient(90deg, #000 calc(100% - 2.5rem), transparent);
+    }
+
+    .works__filters .chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .works__filters .chip {
+      flex: none;
+    }
+  }
+
+  /* masonry by columns: every photo keeps its own height, which here is the nail length */
+  .works__grid {
+    list-style: none;
+    columns: 2;
+    column-gap: clamp(0.75rem, 2vw, 1.5rem);
+  }
+
+  .works__item {
+    break-inside: avoid;
+    margin-bottom: clamp(0.75rem, 2vw, 1.5rem);
+  }
+
+  .works__open {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .works__mask {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--color-ink-2);
+  }
+
+  .works__mask picture,
+  .works__mask img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .works__mask img {
+    object-fit: cover;
+    transition: transform 0.9s var(--ease-out);
+  }
+
+  .works__open:hover .works__mask img,
+  .works__open:focus-visible .works__mask img {
+    transform: scale(1.06);
+  }
+
+  .works__empty {
+    display: grid;
+    justify-items: start;
+    gap: 1rem;
+    color: rgb(245 240 235 / 0.8);
+  }
+
+  .works__reset {
+    padding: 0;
+    border: 0;
+    font: inherit;
+    background: none;
+  }
+
+  @media (min-width: 700px) {
+    .works__grid {
+      columns: 3;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .works__grid {
+      columns: 4;
+    }
+  }
+
+  .lightbox {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: var(--color-milk);
+    background: transparent;
+    overflow: hidden;
+  }
+
+  .lightbox::backdrop {
+    background: rgb(7 6 9 / 0.92);
+    backdrop-filter: blur(10px);
+  }
+
+  .lightbox__body {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    height: 100%;
+    padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(0.75rem, env(safe-area-inset-bottom))
+      max(1rem, env(safe-area-inset-left));
+  }
+
+  .lightbox__stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 0;
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .lightbox[data-zoomed] .lightbox__stage {
+    cursor: grab;
+  }
+
+  .lightbox__photo {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 1.25rem;
+    overflow: hidden;
+  }
+
+  .lightbox__zoom {
+    transform-origin: 50% 50%;
+    will-change: transform;
+  }
+
+  .lightbox__zoom picture,
+  .lightbox__zoom img {
+    max-width: min(100%, 1100px);
+    max-height: calc(100dvh - 7.5rem);
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    -webkit-user-drag: none;
+  }
+
+  .lightbox__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    padding-top: 0.75rem;
+  }
+
+  .lightbox__caption {
+    display: grid;
+    gap: 0.15rem;
+    max-width: 44rem;
+    font-size: 0.95rem;
+  }
+
+  .lightbox__tags {
+    color: var(--color-mute);
+    font-size: 0.85rem;
+  }
+
+  .lightbox__controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .lightbox__controls .icon-btn:disabled {
+    opacity: 0.35;
+  }
+
+  .lightbox__divider {
+    width: 1px;
+    height: 1.6rem;
+    margin-inline: 0.25rem;
+    background: var(--color-hairline);
+  }
+
+  .lightbox__count {
+    min-width: 4.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-mute);
+  }
+
+  ::view-transition-group(work-photo) {
+    animation-duration: 0.5s;
+    animation-timing-function: var(--ease-out);
+  }
+}
