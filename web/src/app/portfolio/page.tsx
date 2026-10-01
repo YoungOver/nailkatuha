@@ -1,26 +1,20 @@
 import type { Metadata } from 'next'
-import { NailMasks } from '@/components/NailMasks'
-import { works } from '@/content/works'
-import { NailFile } from '@/fx/NailFile'
-import { Footer } from '@/sections/Footer'
-import { Header } from '@/sections/Header'
-import { Portfolio } from '@/sections/Portfolio'
+
+const base = process.env.NEXT_PUBLIC_BASE ?? ''
 
 export const metadata: Metadata = {
-  title: `Портфолио nailkatuha: ${works.length} работ`,
-  description: 'Работы мастера: короткие и экстремальные длины, хром, френч, нюд, дизайн и мудборды с референсами.',
+  title: 'nailkatuha: работы',
+  robots: { index: false },
 }
 
-export default function PortfolioPage() {
+/* The portfolio now lives on the main page; old links land on the gallery there. */
+export default function PortfolioMoved() {
   return (
     <>
-      <NailMasks />
-      <Header />
-      <main id="main" tabIndex={-1} className="portfolio-page">
-        <Portfolio />
-      </main>
-      <Footer />
-      <NailFile />
+      <meta httpEquiv="refresh" content={`0; url=${base}/#works`} />
+      <p style={{ padding: '6rem 1.5rem' }}>
+        Работы теперь на главной: <a href={`${base}/#works`}>перейти к работам</a>.
+      </p>
     </>
   )
 }
