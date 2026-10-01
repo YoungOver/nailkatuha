@@ -109,6 +109,8 @@ await page.locator('#tryon button', { hasText: 'Пример' }).click()
 await page.waitForFunction(() => /Готово|Не вижу|Не получилось|не загрузился/.test(document.querySelector('.tryon__status')?.textContent ?? ''), null, { timeout: 60000 }).catch(() => null)
 const tryStatus = await page.locator('.tryon__status').textContent()
 check('try-on finds the hand on the example and paints the nails', tryStatus.startsWith('Готово'), tryStatus)
+const painted3d = Number(await page.locator('.tryon__canvas').getAttribute('data-nails'))
+check('the example gets at least three 3D nails', painted3d >= 3, String(painted3d))
 
 await scrollTo('.hero')
 await page.locator('.hero .lacquer-cap[aria-label="Лаванда"]').click()
@@ -119,6 +121,19 @@ check('cursor follows the lacquer', decodeURIComponent(await page.evaluate(() =>
 await page.reload({ waitUntil: 'networkidle' })
 const kept = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--lacquer').trim())
 check('lacquer survives a reload without flash', kept === '#9c8cff', kept)
+
+/* the studio: nine finishes, seven shapes, and any colour from the wheel */
+await page.locator('.hero .studio__tab', { hasText: 'Покрытие' }).click()
+check('nine finishes to choose from', (await page.locator('.hero .studio__panel [role="radio"]').count()) === 9)
+await page.locator('.hero .studio__tab', { hasText: 'Форма' }).click()
+check('seven shapes to choose from', (await page.locator('.hero .studio__panel [role="radio"]').count()) === 7)
+await page.locator('.hero .studio__tab', { hasText: 'Цвет' }).click()
+await page.locator('.hero .lacquer-cap--wheel').click()
+await page.locator('.hero .wheel__hex input').fill('#12ab34')
+const own = await until(page, () => getComputedStyle(document.documentElement).getPropertyValue('--lacquer-true').trim() === '#12ab34')
+check('a colour typed into the wheel reaches the nails and the page', own)
+check('a custom shade keeps the page accent readable', await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--lacquer').trim() !== ''))
+await page.locator('.hero .lacquer-cap[aria-label="Лаванда"]').click()
 
 await page.locator('.sound-toggle').click()
 check('sound toggle is pressed', (await page.locator('.sound-toggle').getAttribute('aria-pressed')) === 'true')
