@@ -1,3 +1,5 @@
+import { applyCursor } from './cursor'
+
 export type Lacquer = { id: string; name: string; hex: string }
 export type Finish = 'gloss' | 'matte' | 'chrome' | 'cateye'
 export type Shape = 'almond' | 'square' | 'stiletto' | 'coffin'
@@ -115,6 +117,7 @@ function paint(l: Lacquer) {
   root.style.setProperty('--lacquer', l.hex)
   root.style.setProperty('--on-lacquer', textOn(l.hex))
   root.dataset.lacquer = l.id
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) applyCursor(l.hex)
 }
 
 /** The page accent changes with a spreading circle from the click, like a drop of polish. */
