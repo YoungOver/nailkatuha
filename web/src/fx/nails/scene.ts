@@ -92,7 +92,15 @@ export class NailScene {
   private time = 0
   private size = { w: 1, h: 1 }
 
-  constructor(canvas: HTMLCanvasElement | OffscreenCanvas, w: number, h: number, dpr: number, state: NailState) {
+  /** `still`: the visitor asked for reduced motion, so the set does not float on its own. */
+  constructor(
+    canvas: HTMLCanvasElement | OffscreenCanvas,
+    w: number,
+    h: number,
+    dpr: number,
+    state: NailState,
+    private still = false,
+  ) {
     this.renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' })
     this.renderer.setClearColor(0x000000, 0)
     this.renderer.toneMapping = ACESFilmicToneMapping
@@ -177,7 +185,7 @@ export class NailScene {
     const g = this.group
     g.rotation.y = MathUtils.damp(g.rotation.y, this.pointer.x * 0.4, 4, dt)
     g.rotation.x = MathUtils.damp(g.rotation.x, -0.32 + this.pointer.y * 0.2, 4, dt)
-    g.position.y = -0.3 + Math.sin(t * 0.8) * 0.04
+    g.position.y = -0.3 + (this.still ? 0 : Math.sin(t * 0.8) * 0.04)
 
     const viewH = 2 * CAMERA_Z * Math.tan(MathUtils.degToRad(FOV / 2))
     const viewW = viewH * this.camera.aspect

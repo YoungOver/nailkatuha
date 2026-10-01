@@ -76,7 +76,7 @@ export function buildNailGeometry({ shape, width, length }: NailSpec): BufferGeo
   const ROWS = 72
   const COLS = 28
   const thickness = 0.045 * width
-  const dome = 0.22 * width
+  const dome = 0.15 * width
   const poly = nailOutline(shape, width, length)
   let yMin = Infinity
   let yMax = -Infinity
@@ -92,11 +92,15 @@ export function buildNailGeometry({ shape, width, length }: NailSpec): BufferGeo
       const v = j / ROWS
       const y = yMin + 1e-4 + (yMax - yMin - 2e-4) * v
       const [lo, hi] = extentsAt(poly, y)
+      /* a tip is thinnest where it meets the cuticle */
+      const ramp = Math.min(1, v / 0.2)
+      const shell = thickness * (0.3 + 0.7 * ramp * ramp * (3 - 2 * ramp))
       for (let i = 0; i <= COLS; i++) {
         const u = i / COLS
         const x = lo + (hi - lo) * u
         const t = Math.min(1, Math.abs(x) / (width / 2))
-        const z = dome * (1 - t * t) - 0.07 * length * v * v + (sign * thickness) / 2
+        /* flatter on top and rolling off at the sides, like a real nail plate */
+        const z = dome * (1 - Math.pow(t, 2.4)) - 0.07 * length * v * v + (sign * shell) / 2
         positions.push(x, y - yMin, z)
         uvs.push(u, v)
       }

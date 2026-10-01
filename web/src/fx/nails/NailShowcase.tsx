@@ -26,6 +26,7 @@ export default function NailShowcase({ onReady }: { onReady?: () => void }) {
     if (!canvas) return
     lacquerStore.restore()
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches
     const rect = () => canvas.getBoundingClientRect()
     let send: (m: ToWorker, transfer?: Transferable[]) => void = () => {}
     let cleanup = () => {}
@@ -38,7 +39,7 @@ export default function NailShowcase({ onReady }: { onReady?: () => void }) {
       }
       const offscreen = canvas.transferControlToOffscreen()
       const r = rect()
-      send({ type: 'init', canvas: offscreen, w: r.width, h: r.height, dpr, state: snapshot() }, [offscreen])
+      send({ type: 'init', canvas: offscreen, w: r.width, h: r.height, dpr, still, state: snapshot() }, [offscreen])
       cleanup = () => worker.terminate()
     } else {
       let raf = 0
@@ -46,7 +47,12 @@ export default function NailShowcase({ onReady }: { onReady?: () => void }) {
       import('./scene').then(({ NailScene }) => {
         if (!alive) return
         const r = rect()
-        const scene = new NailScene(canvas, r.width, r.height, dpr, snapshot())
+        let scene: InstanceType<typeof NailScene>
+        try {
+          scene = new NailScene(canvas, r.width, r.height, dpr, snapshot(), still)
+        } catch {
+          return
+        }
         let visible = true
         let last = 0
         const loop = (now: number) => {
@@ -85,9 +91,15 @@ export default function NailShowcase({ onReady }: { onReady?: () => void }) {
     })
     ro.observe(canvas)
 
-    const io = new IntersectionObserver(([e]) => send({ type: 'visible', visible: e.isIntersecting }))
+    /* draw only while the hero is on screen and the tab is in front */
+    let inView = true
+    const report = () => send({ type: 'visible', visible: inView && !document.hidden })
+    const io = new IntersectionObserver(([e]) => {
+      inView = e.isIntersecting
+      report()
+    })
     io.observe(canvas)
-    const onVisibility = () => send({ type: 'visible', visible: !document.hidden })
+    const onVisibility = report
     document.addEventListener('visibilitychange', onVisibility)
 
     /* pointer events are coalesced to one message per frame */

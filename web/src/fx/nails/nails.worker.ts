@@ -8,13 +8,13 @@ import { NailScene, type NailState } from './scene'
  */
 
 export type ToWorker =
-  | { type: 'init'; canvas: OffscreenCanvas; w: number; h: number; dpr: number; state: NailState }
+  | { type: 'init'; canvas: OffscreenCanvas; w: number; h: number; dpr: number; still: boolean; state: NailState }
   | { type: 'resize'; w: number; h: number; dpr: number }
   | { type: 'pointer'; x: number; y: number; px: number | null; py: number | null }
   | { type: 'state'; state: NailState }
   | { type: 'visible'; visible: boolean }
 
-export type FromWorker = { type: 'ready' } | { type: 'slow' }
+export type FromWorker = { type: 'ready' } | { type: 'slow' } | { type: 'failed' }
 
 const post = (m: FromWorker) => (self as DedicatedWorkerGlobalScope).postMessage(m)
 
@@ -53,7 +53,13 @@ self.onmessage = (e: MessageEvent<ToWorker>) => {
     case 'init':
       dpr = m.dpr
       size = { w: m.w, h: m.h }
-      scene = new NailScene(m.canvas, m.w, m.h, m.dpr, m.state)
+      try {
+        scene = new NailScene(m.canvas, m.w, m.h, m.dpr, m.state, m.still)
+      } catch {
+        /* no WebGL on this device: the page keeps its glow and the picker still repaints the site */
+        post({ type: 'failed' })
+        break
+      }
       scene.compile().then(() => {
         running = true
         last = 0

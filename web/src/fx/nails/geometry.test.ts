@@ -10,6 +10,14 @@ describe('nail geometry', () => {
     expect(b.max.y - b.min.y).toBeCloseTo(1.6, 1)
   })
 
+  it('is thinner at the cuticle than along the plate', () => {
+    const g = buildNailGeometry({ shape: 'almond', width: 1, length: 1.6 })
+    const pos = g.getAttribute('position')
+    const half = pos.count / 2
+    const gapAt = (row: number) => pos.getZ(row * 29 + 14) - pos.getZ(half + row * 29 + 14)
+    expect(gapAt(0)).toBeLessThan(gapAt(36) * 0.5)
+  })
+
   it('domes across the width like a real nail (C-curve)', () => {
     const g = buildNailGeometry({ shape: 'square', width: 1, length: 1.2 })
     const pos = g.getAttribute('position')
