@@ -1,23 +1,19 @@
 import {
   ACESFilmicToneMapping,
   Color,
-  DoubleSide,
   Group,
   MathUtils,
   Mesh,
-  MeshBasicMaterial,
   PerspectiveCamera,
-  PlaneGeometry,
-  PMREMGenerator,
   Raycaster,
   Scene,
-  TorusGeometry,
   Vector2,
   WebGLRenderer,
   type BufferGeometry,
 } from 'three'
 import type { Finish, Shape } from '../lacquer'
 import { buildNailGeometry } from './geometry'
+import { buildStudio } from './studio'
 import { createLacquerMaterial, FINISH_LOOK, type LacquerUniforms } from './material'
 
 export type NailState = { hex: string; finish: Finish; shape: Shape }
@@ -38,35 +34,6 @@ const SET_WIDTH = 5.4
 const SET_HEIGHT = 4.3
 const CAMERA_Z = 7.2
 const FOV = 30
-
-/*
- * Studio light: a few emissive panels rendered once into a prefiltered
- * environment map, like softboxes in product photography. It gives the
- * lacquer its long glossy highlights without downloading an HDR file.
- */
-function buildStudio(gl: WebGLRenderer) {
-  const pmrem = new PMREMGenerator(gl)
-  const room = new Scene()
-  const add = (mesh: Mesh, pos: [number, number, number]) => {
-    mesh.position.set(...pos)
-    mesh.lookAt(0, 0, 0)
-    room.add(mesh)
-  }
-  const light = (color: string, power: number) => new MeshBasicMaterial({ color: new Color(color).multiplyScalar(power), side: DoubleSide })
-  add(new Mesh(new PlaneGeometry(5, 2.5), light('#ffffff', 3.2)), [-3, 3, 4])
-  add(new Mesh(new PlaneGeometry(1.2, 6), light('#ffffff', 2)), [4, 0.5, 3])
-  add(new Mesh(new TorusGeometry(1.25, 0.09, 12, 64), light('#ffd6e6', 1.4)), [0, -3, 3])
-  add(new Mesh(new PlaneGeometry(8, 2), light('#b9a6ff', 0.8)), [0, 4, -4])
-  const target = pmrem.fromScene(room, 0.03)
-  room.traverse((o) => {
-    if (o instanceof Mesh) {
-      o.geometry.dispose()
-      ;(o.material as MeshBasicMaterial).dispose()
-    }
-  })
-  pmrem.dispose()
-  return target
-}
 
 /**
  * The hero scene in plain three.js, so it can run inside a Web Worker on an
@@ -92,7 +59,7 @@ export class NailScene {
   private time = 0
   private size = { w: 1, h: 1 }
 
-  /** `still`: the visitor asked for reduced motion, so the set does not float on its own. */
+  /** `still`: the visitor asked for reduced motion, so the set floats at half the amplitude. */
   constructor(
     canvas: HTMLCanvasElement | OffscreenCanvas,
     w: number,
@@ -185,7 +152,7 @@ export class NailScene {
     const g = this.group
     g.rotation.y = MathUtils.damp(g.rotation.y, this.pointer.x * 0.4, 4, dt)
     g.rotation.x = MathUtils.damp(g.rotation.x, -0.32 + this.pointer.y * 0.2, 4, dt)
-    g.position.y = -0.3 + (this.still ? 0 : Math.sin(t * 0.8) * 0.04)
+    g.position.y = -0.3 + Math.sin(t * 0.8) * (this.still ? 0.02 : 0.04)
 
     const viewH = 2 * CAMERA_Z * Math.tan(MathUtils.degToRad(FOV / 2))
     const viewW = viewH * this.camera.aspect
