@@ -15,13 +15,12 @@
     justify-items: start;
   }
 
-  .tryon__copy .lacquer-picker {
+  .tryon__copy .studio {
     justify-items: start;
     text-align: left;
   }
 
-  .tryon__copy .lacquer-picker__caps,
-  .tryon__copy .lacquer-picker__row {
+  .tryon__copy .studio__options {
     justify-content: start;
   }
 
@@ -140,7 +139,7 @@
       order: 3;
     }
 
-    .tryon__copy .lacquer-picker {
+    .tryon__copy .studio {
       order: 4;
     }
   }
