@@ -48,7 +48,7 @@ check('moodboard filter shows 8 works', (await page.locator('.works__item').coun
 
 await page.locator('#reasons').scrollIntoViewIfNeeded()
 await page.locator('.reasons__item').nth(3).click()
-check('reason 4 selects tip 4', await page.evaluate(() => document.querySelectorAll('.tip')[3].hasAttribute('data-active')))
+check('reason 4 shows its proof photo', await page.evaluate(() => document.querySelectorAll('.reasons__photo')[3].hasAttribute('data-active')))
 
 await page.locator('.lacquer-cap[aria-label="Лаванда"]').scrollIntoViewIfNeeded()
 await page.locator('.lacquer-cap[aria-label="Лаванда"]').click()

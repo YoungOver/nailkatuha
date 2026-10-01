@@ -35,7 +35,7 @@ const server = createServer((req, res) => {
 const base = `http://127.0.0.1:${server.address().port}`
 
 mkdirSync(outDir, { recursive: true })
-const browser = await chromium.launch({ channel: 'chrome', args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] })
+const browser = await chromium.launch({ channel: 'chrome' })
 let problems = 0
 
 for (const [w, h, mobile] of VIEWPORTS) {
@@ -46,7 +46,7 @@ for (const [w, h, mobile] of VIEWPORTS) {
   tab.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
   tab.on('pageerror', (e) => errors.push(String(e)))
   await tab.goto(base + page, { waitUntil: 'networkidle' })
-  await tab.waitForTimeout(2500)
+  await tab.waitForTimeout(4000)
   if (full) {
     const height = await tab.evaluate(() => document.documentElement.scrollHeight)
     for (let y = 0; y < height; y += h * 0.8) {
