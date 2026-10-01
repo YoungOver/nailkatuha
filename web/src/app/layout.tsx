@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from 'next'
-import { Onest } from 'next/font/google'
+import { Wix_Madefor_Display, Wix_Madefor_Text } from 'next/font/google'
 import { prices } from '@/content/prices'
 import { PAINT_KEY } from '@/fx/lacquer'
 import { studio } from '@/content/studio'
 import './globals.css'
 
-const sans = Onest({ subsets: ['latin', 'cyrillic'], variable: '--font-onest', display: 'swap' })
+/* one superfamily, like SF Pro on Apple's pages: Display for headlines, Text for reading */
+const display = Wix_Madefor_Display({ subsets: ['latin', 'cyrillic'], variable: '--font-madefor-display', display: 'swap' })
+const text = Wix_Madefor_Text({ subsets: ['latin', 'cyrillic'], variable: '--font-madefor-text', display: 'swap' })
 
 export const metadata: Metadata = {
   title: 'nailkatuha: маникюр и nail art в Санкт-Петербурге',
@@ -23,7 +25,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#070609',
+  themeColor: '#000000',
   colorScheme: 'dark',
 }
 
@@ -54,7 +56,7 @@ const lacquerBoot = `try{var v=JSON.parse(localStorage.getItem('${PAINT_KEY}'));
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ru" className={sans.variable} suppressHydrationWarning>
+    <html lang="ru" className={`${display.variable} ${text.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: lacquerBoot }} />
       </head>
