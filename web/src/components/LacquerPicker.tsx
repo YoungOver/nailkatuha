@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, type KeyboardEvent, type MouseEvent } from 'react'
+import { useEffect, useId, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { FINISHES, LACQUERS, lacquerStore, SHAPES, type Finish, type Shape } from '@/fx/lacquer'
 import { click } from '@/fx/sound'
 
@@ -23,6 +23,7 @@ function useRoving<T>(items: T[], active: number, pick: (i: number) => void) {
 }
 
 export function LacquerPicker() {
+  const labelId = useId()
   const [lacquerId, setLacquerId] = useState(LACQUERS[0].id)
   const [finish, setFinish] = useState<Finish>('gloss')
   const [shape, setShape] = useState<Shape>('almond')
@@ -64,11 +65,11 @@ export function LacquerPicker() {
 
   return (
     <div className="lacquer-picker">
-      <p className="lacquer-picker__label" id="lacquer-label">
+      <p className="lacquer-picker__label" id={labelId}>
         <b>{LACQUERS[lacquerIndex].name}</b>, {FINISHES[finishIndex].name.toLowerCase()}, {SHAPES[shapeIndex].name.toLowerCase()}
         {finish === 'cateye' && <span className="lacquer-picker__hint">Ведите курсором или пальцем: блик идёт за ним, как за магнитом</span>}
       </p>
-      <div role="radiogroup" aria-labelledby="lacquer-label" className="lacquer-picker__caps" onKeyDown={onLacquerKey}>
+      <div role="radiogroup" aria-labelledby={labelId} className="lacquer-picker__caps" onKeyDown={onLacquerKey}>
         {LACQUERS.map((l, i) => (
           <button
             key={l.id}
