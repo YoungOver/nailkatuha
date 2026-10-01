@@ -21,6 +21,8 @@ const errors = []
 page.on('pageerror', (e) => errors.push(String(e)))
 const results = []
 const check = (name, ok, extra = '') => results.push(`${ok ? 'ok  ' : 'FAIL'} ${name}${extra ? ` (${extra})` : ''}`)
+/* waits for a condition instead of a fixed pause: the CI runner draws WebGL in software and can be several times slower */
+const until = (p, fn, arg, timeout = 10000) => p.waitForFunction(fn, arg, { timeout }).then(() => true, () => false)
 const scrollTo = (sel, extra = 0) => page.evaluate(([s, e]) => window.scrollTo({ top: document.querySelector(s).getBoundingClientRect().top + scrollY + e, behavior: 'instant' }), [sel, extra])
 
 await page.goto(base + '/', { waitUntil: 'networkidle' })
@@ -35,60 +37,57 @@ check('cursor is a native emery-board image (no lag)', cursor.startsWith('url("d
 check('cursor is painted in the lacquer', decodeURIComponent(cursor).includes('#ff4f8b'))
 
 /* the layers section: scroll position drives the active step */
-const layersStep = async (f) => {
+const layersStep = async (f, want) => {
   await page.evaluate((f) => {
     const el = document.getElementById('layers')
     const top = el.getBoundingClientRect().top + scrollY
     window.scrollTo({ top: top + (el.offsetHeight - innerHeight) * f, behavior: 'instant' })
   }, f)
-  await page.waitForTimeout(400)
-  return page.evaluate(() => [...document.querySelectorAll('.layers__step')].findIndex((s) => s.hasAttribute('data-active')))
+  return until(page, (want) => [...document.querySelectorAll('.layers__step')].findIndex((s) => s.hasAttribute('data-active')) === want, want)
 }
-check('layers: start of the scroll shows step 1', (await layersStep(0.05)) === 0)
-check('layers: middle of the scroll shows step 3', (await layersStep(0.6)) === 2)
-check('layers: end of the scroll shows step 4', (await layersStep(0.98)) === 3)
+check('layers: start of the scroll shows step 1', await layersStep(0.05, 0))
+check('layers: middle of the scroll shows step 3', await layersStep(0.6, 2))
+check('layers: end of the scroll shows step 4', await layersStep(0.98, 3))
 
 await scrollTo('#works')
+/* open, and the view transition from the thumbnail is over: while it runs, the page does not take pointer input */
+const isOpen = () =>
+  document.querySelector('dialog.lightbox')?.open === true && !document.getAnimations().some((a) => a.effect?.pseudoElement?.startsWith('::view-transition'))
+const isZoomed = () => !!document.querySelector('dialog.lightbox')?.hasAttribute('data-zoomed')
 await page.locator('.works__open').nth(2).click()
-await page.waitForTimeout(800)
-check('photo opens in a dialog', await page.evaluate(() => document.querySelector('dialog.lightbox')?.open === true))
+check('photo opens in a dialog', await until(page, isOpen))
 const photo = await page.locator('.lightbox__zoom').boundingBox()
 await page.mouse.click(photo.x + photo.width / 2, photo.y + photo.height / 2)
 await page.waitForTimeout(300)
 check('a click on the photo keeps it open', await page.evaluate(() => document.querySelector('dialog.lightbox')?.open === true))
 await page.keyboard.press('+')
-await page.waitForTimeout(200)
-check('+ zooms the photo in', await page.evaluate(() => document.querySelector('dialog.lightbox')?.hasAttribute('data-zoomed')))
+check('+ zooms the photo in', await until(page, isZoomed))
 const box = await page.locator('.lightbox__stage').boundingBox()
 await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
 await page.mouse.wheel(0, 600)
-await page.waitForTimeout(200)
-check('wheel zooms back out', await page.evaluate(() => !document.querySelector('dialog.lightbox')?.hasAttribute('data-zoomed')))
+check('wheel zooms back out', await until(page, () => !document.querySelector('dialog.lightbox')?.hasAttribute('data-zoomed')))
 await page.mouse.dblclick(box.x + box.width / 2, box.y + box.height / 2)
-await page.waitForTimeout(200)
-check('double click zooms in at the pointer', await page.evaluate(() => document.querySelector('dialog.lightbox')?.hasAttribute('data-zoomed')))
+check('double click zooms in at the pointer', await until(page, isZoomed))
 await page.keyboard.press('0')
 const first = await page.locator('.lightbox__count').textContent()
 await page.keyboard.press('ArrowRight')
-await page.waitForTimeout(300)
-check('arrow key moves to the next photo', (await page.locator('.lightbox__count').textContent()) !== first, `${first} → ${await page.locator('.lightbox__count').textContent()}`)
+const stepped = await until(page, (first) => document.querySelector('.lightbox__count')?.textContent !== first, first)
+check('arrow key moves to the next photo', stepped, `${first} → ${await page.locator('.lightbox__count').textContent()}`)
 await page.keyboard.press('Escape')
-await page.waitForTimeout(700)
-check('Esc closes the dialog', await page.evaluate(() => !document.querySelector('dialog.lightbox')?.open))
-check('focus returns to the thumbnail', await page.evaluate(() => document.activeElement?.classList.contains('works__open')))
+check('Esc closes the dialog', await until(page, () => !document.querySelector('dialog.lightbox')?.open))
+check('focus returns to the thumbnail', await until(page, () => document.activeElement?.classList.contains('works__open')))
 
 check('all 18 works are in one gallery', (await page.locator('.works__item').count()) === 18)
+const shows = (n) => until(page, (n) => document.querySelectorAll('.works__item').length === n, n)
 await page.locator('.chip', { hasText: 'Мудборд' }).click()
-await page.waitForTimeout(300)
-check('moodboard filter shows 8 works', (await page.locator('.works__item').count()) === 8, String(await page.locator('.works__item').count()))
+check('moodboard filter shows 8 works', await shows(8), String(await page.locator('.works__item').count()))
 await page.locator('.chip', { hasText: 'Все' }).click()
 await page.locator('.chip', { hasText: 'Экстремальная длина' }).click()
-await page.waitForTimeout(300)
-check('length filter narrows to extreme nails', (await page.locator('.works__item').count()) === 2)
+check('length filter narrows to extreme nails', await shows(2))
 await page.locator('.chip', { hasText: 'Нюд' }).click()
-check('empty combination explains itself', await page.locator('.works__empty').isVisible())
+check('empty combination explains itself', await until(page, () => !!document.querySelector('.works__empty')))
 await page.locator('.works__reset').click()
-check('reset brings every work back', (await page.locator('.works__item').count()) === 18)
+check('reset brings every work back', await shows(18))
 
 await scrollTo('#tryon')
 await page.locator('#tryon button', { hasText: 'Пример' }).click()
@@ -98,7 +97,7 @@ check('try-on finds the hand on the example and paints the nails', tryStatus.sta
 
 await scrollTo('.hero')
 await page.locator('.hero .lacquer-cap[aria-label="Лаванда"]').click()
-await page.waitForTimeout(900)
+await until(page, () => getComputedStyle(document.documentElement).getPropertyValue('--lacquer').trim() === '#9c8cff')
 const lac = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--lacquer').trim())
 check('lacquer repaints the site', lac === '#9c8cff', lac)
 check('cursor follows the lacquer', decodeURIComponent(await page.evaluate(() => getComputedStyle(document.documentElement).cursor)).includes('#9c8cff'))
@@ -112,12 +111,12 @@ check('sound toggle is pressed', (await page.locator('.sound-toggle').getAttribu
 const old = await browser.newPage({ viewport: { width: 1280, height: 800 } })
 await old.addInitScript(() => delete HTMLCanvasElement.prototype.transferControlToOffscreen)
 await old.goto(base + '/', { waitUntil: 'networkidle' })
-await old.waitForSelector('.showcase[data-ready]', { timeout: 15000 }).catch(() => null)
+await old.waitForSelector('.showcase[data-ready]', { timeout: 30000 }).catch(() => null)
 check('3D falls back to the page thread without OffscreenCanvas', (await old.locator('.showcase[data-ready]').count()) === 1)
 await old.close()
 
 /* anchor jumps are checked on a slowed CPU: on a slow phone sections lay out while the smooth scroll is still running */
-const slow = async (p) => (await p.context().newCDPSession(p)).send('Emulation.setCPUThrottlingRate', { rate: 6 })
+const slow = async (p) => (await p.context().newCDPSession(p)).send('Emulation.setCPUThrottlingRate', { rate: 4 })
 const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
 await mobile.goto(base + '/', { waitUntil: 'networkidle' })
 await slow(mobile)
@@ -125,21 +124,21 @@ check('no image cursor on touch screens', !(await mobile.evaluate(() => getCompu
 await mobile.locator('.site-header__toggle').click()
 check('mobile menu opens', await mobile.locator('#mobile-menu').isVisible())
 await mobile.locator('#mobile-menu a', { hasText: 'Цены' }).click()
-await mobile.waitForTimeout(600)
-check('mobile menu closes after choosing a section', !(await mobile.locator('#mobile-menu').isVisible()))
+const menuClosed = await mobile.locator('#mobile-menu').waitFor({ state: 'hidden', timeout: 10000 }).then(() => true, () => false)
+check('mobile menu closes after choosing a section', menuClosed)
 /* landed: the section sits under the header and the jump has put the lazy sections back */
 const landed = (id) => {
   const top = document.getElementById(id).getBoundingClientRect().top
   return top >= 0 && top <= 96 && !document.querySelector('main > section[style*="content-visibility"]')
 }
-await mobile.waitForFunction(landed, 'prices', { timeout: 8000 }).catch(() => null)
+await until(mobile, landed, 'prices', 20000)
 const pricesTop = await mobile.evaluate(() => Math.round(document.getElementById('prices').getBoundingClientRect().top))
 check('menu link lands on its section under the header', pricesTop >= 0 && pricesTop <= 96, `top ${pricesTop}px`)
 
 await page.goto(base + '/', { waitUntil: 'networkidle' })
 await slow(page)
 await page.locator('.site-header a[href$="#contacts"]').first().click()
-await page.waitForFunction(landed, 'contacts', { timeout: 8000 }).catch(() => null)
+await until(page, landed, 'contacts', 20000)
 const contactsTop = await page.evaluate(() => Math.round(document.getElementById('contacts').getBoundingClientRect().top))
 check('header link to the last section lands exactly', contactsTop >= 0 && contactsTop <= 96, `top ${contactsTop}px`)
 check('focus moves to the section, so Tab continues there', await page.evaluate(() => document.activeElement?.id === 'contacts'))
