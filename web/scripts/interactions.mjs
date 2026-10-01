@@ -116,23 +116,34 @@ await old.waitForSelector('.showcase[data-ready]', { timeout: 15000 }).catch(() 
 check('3D falls back to the page thread without OffscreenCanvas', (await old.locator('.showcase[data-ready]').count()) === 1)
 await old.close()
 
+/* anchor jumps are checked on a slowed CPU: on a slow phone sections lay out while the smooth scroll is still running */
+const slow = async (p) => (await p.context().newCDPSession(p)).send('Emulation.setCPUThrottlingRate', { rate: 6 })
 const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
 await mobile.goto(base + '/', { waitUntil: 'networkidle' })
+await slow(mobile)
 check('no image cursor on touch screens', !(await mobile.evaluate(() => getComputedStyle(document.documentElement).cursor)).startsWith('url('))
 await mobile.locator('.site-header__toggle').click()
 check('mobile menu opens', await mobile.locator('#mobile-menu').isVisible())
 await mobile.locator('#mobile-menu a', { hasText: 'Цены' }).click()
 await mobile.waitForTimeout(600)
 check('mobile menu closes after choosing a section', !(await mobile.locator('#mobile-menu').isVisible()))
-await mobile.waitForTimeout(1500)
+/* landed: the section sits under the header and the jump has put the lazy sections back */
+const landed = (id) => {
+  const top = document.getElementById(id).getBoundingClientRect().top
+  return top >= 0 && top <= 96 && !document.querySelector('main > section[style*="content-visibility"]')
+}
+await mobile.waitForFunction(landed, 'prices', { timeout: 8000 }).catch(() => null)
 const pricesTop = await mobile.evaluate(() => Math.round(document.getElementById('prices').getBoundingClientRect().top))
 check('menu link lands on its section under the header', pricesTop >= 0 && pricesTop <= 96, `top ${pricesTop}px`)
 
 await page.goto(base + '/', { waitUntil: 'networkidle' })
+await slow(page)
 await page.locator('.site-header a[href$="#contacts"]').first().click()
-await page.waitForTimeout(2000)
+await page.waitForFunction(landed, 'contacts', { timeout: 8000 }).catch(() => null)
 const contactsTop = await page.evaluate(() => Math.round(document.getElementById('contacts').getBoundingClientRect().top))
 check('header link to the last section lands exactly', contactsTop >= 0 && contactsTop <= 96, `top ${contactsTop}px`)
+check('focus moves to the section, so Tab continues there', await page.evaluate(() => document.activeElement?.id === 'contacts'))
+check('the address bar shows the section', page.url().endsWith('#contacts'), page.url())
 
 await page.goto(base + '/portfolio/')
 await page.waitForURL(/#works$/, { timeout: 5000 }).catch(() => null)
