@@ -89,6 +89,21 @@ check('empty combination explains itself', await until(page, () => !!document.qu
 await page.locator('.works__reset').click()
 check('reset brings every work back', await shows(18))
 
+/* booking on the page: a price line picks the service, the form says what is missing, the visit is confirmed */
+await scrollTo('#prices')
+await page.locator('.price-line').nth(2).click()
+check('a price line chooses its service in the booking form', await until(page, () => document.querySelectorAll('.booking__service input:checked').length === 1))
+await page.locator('.booking__time:not([data-taken])').first().click()
+await page.locator('.booking__submit button').click()
+check('an empty form says what is missing', await until(page, () => document.querySelectorAll('.booking__error').length >= 2))
+await page.locator('.booking__input input').nth(0).fill('Анна')
+await page.locator('.booking__input input').nth(1).fill('89161234567')
+check('the phone is formatted while typing', (await page.locator('.booking__input input').nth(1).inputValue()) === '+7 (916) 123-45-67')
+await page.locator('.booking__consent').click()
+await page.locator('.booking__submit button').click()
+check('the visit is confirmed on the page, with no messenger', await until(page, () => document.querySelector('.booking__done h3')?.textContent === 'Вы записаны'))
+check('the map loads without an API key', (await page.locator('iframe.map__canvas[src*="map-widget"]').count()) === 1)
+
 await scrollTo('#tryon')
 await page.locator('#tryon button', { hasText: 'Пример' }).click()
 await page.waitForFunction(() => /Готово|Не вижу|Не получилось|не загрузился/.test(document.querySelector('.tryon__status')?.textContent ?? ''), null, { timeout: 60000 }).catch(() => null)
