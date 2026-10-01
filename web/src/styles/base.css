@@ -48,7 +48,9 @@
     border-radius: 8px;
   }
 
-  main:focus {
+  /* a menu link moves focus to its section, so the next Tab continues there; the section itself needs no ring */
+  main:focus,
+  section[tabindex='-1']:focus {
     outline: none;
   }
 
