@@ -7,8 +7,13 @@ export function Prices() {
   return (
     <section id="prices" className="prices" aria-labelledby="prices-title">
       <div className="wrap prices__head">
-        <h2 id="prices-title" className="section-title" data-reveal>
+        <p className="eyebrow" data-reveal>
           Цены
+        </p>
+        <h2 id="prices-title" className="section-title" data-reveal>
+          Цена известна
+          <br />
+          заранее.
         </h2>
         <p className="prices__range" data-reveal>
           от {formatRub(low)} до {formatRub(high)}

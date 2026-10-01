@@ -4,8 +4,6 @@ import { LacquerPicker } from '@/components/LacquerPicker'
 import { studio } from '@/content/studio'
 import { Showcase } from '@/fx/nails/Showcase'
 
-const wordTones = ['tone-pink', 'tone-amber', 'tone-violet', 'tone-rose']
-
 export function Hero() {
   return (
     <section id="top" className="hero">
@@ -14,7 +12,7 @@ export function Hero() {
           {/* whole words rise out of their line in CSS, from the very first paint, so nothing flashes after load */}
           <h1 className="hero__title">
             {studio.heroWords.map((word, i) => (
-              <span key={word} className={`hero__word ${wordTones[i]}`} style={{ '--i': i } as CSSProperties}>
+              <span key={word} className="hero__word" style={{ '--i': i } as CSSProperties}>
                 <span className="hero__word-text">
                   {word}
                   <span className="hero__dot">.</span>

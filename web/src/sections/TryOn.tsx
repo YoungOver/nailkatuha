@@ -124,12 +124,17 @@ export function TryOn() {
     <section id="tryon" className="tryon" aria-labelledby="tryon-title">
       <div className="wrap tryon__grid">
         <div className="tryon__copy">
+          <p className="eyebrow" data-reveal>
+            Примерка
+          </p>
           <h2 id="tryon-title" className="section-title" data-reveal>
-            Примерка на ваших руках
+            Сначала примерьте.
+            <br />
+            Потом записывайтесь.
           </h2>
           <p className="section-lead" data-reveal>
-            Включите камеру или загрузите фото руки: ногти окрасятся в выбранный лак, покрытие и форму. Распознавание работает в браузере,
-            видео и фото никуда не отправляются.
+            Включите камеру или загрузите фото руки: <b>ногти лягут на ваши пальцы в выбранном лаке, покрытии и форме.</b> Распознавание
+            работает в браузере, видео и фото никуда не отправляются.
           </p>
           <LacquerPicker />
           <div className="tryon__actions">

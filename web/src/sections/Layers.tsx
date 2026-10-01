@@ -54,8 +54,11 @@ export function Layers() {
           <canvas ref={canvasRef} />
         </div>
         <div className="layers__copy wrap">
+          <p className="eyebrow">Из чего сделан маникюр</p>
           <h2 id="layers-title" className="section-title">
-            Из чего сделан маникюр
+            Четыре слоя.
+            <br />
+            Ни одного лишнего.
           </h2>
           <ol className="layers__steps">
             {STEPS.map((s, i) => (

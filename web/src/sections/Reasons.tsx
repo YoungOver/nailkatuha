@@ -11,8 +11,11 @@ export function Reasons() {
   return (
     <section id="reasons" className="reasons" aria-labelledby="reasons-title">
       <div className="wrap reasons__head">
+        <p className="eyebrow" data-reveal>
+          Почему сюда
+        </p>
         <h2 id="reasons-title" className="section-title" data-reveal>
-          Пять причин прийти
+          Пять причин прийти.
         </h2>
       </div>
       <ol className="wrap reasons__deck">

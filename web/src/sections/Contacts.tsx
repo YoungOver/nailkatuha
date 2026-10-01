@@ -1,4 +1,4 @@
-import { YandexMap } from '@/components/YandexMap'
+import { StreetMap } from '@/components/StreetMap'
 import { studio } from '@/content/studio'
 
 const [lat, lon] = studio.coords
@@ -9,8 +9,9 @@ export function Contacts() {
     <section id="contacts" className="contacts" aria-labelledby="contacts-title">
       <div className="wrap contacts__grid">
         <div className="contacts__info" data-reveal>
+          <p className="eyebrow">Адрес</p>
           <h2 id="contacts-title" className="section-title">
-            Как добраться
+            Как добраться.
           </h2>
           <address className="contacts__address">
             <span className="contacts__street">{studio.address}</span>
@@ -38,7 +39,7 @@ export function Contacts() {
           <p className="contacts__note">{studio.metaNote}</p>
         </div>
         <div data-reveal="scale">
-          <YandexMap coords={studio.coords} label={`nailkatuha, ${studio.address}`} />
+          <StreetMap coords={studio.coords} label={`nailkatuha, ${studio.address}`} route={route} />
         </div>
       </div>
     </section>

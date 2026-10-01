@@ -4,11 +4,16 @@ export function Services() {
   return (
     <section id="services" className="services" aria-labelledby="services-title">
       <div className="wrap services__head">
+        <p className="eyebrow" data-reveal>
+          Услуги
+        </p>
         <h2 id="services-title" className="section-title" data-reveal>
-          Что делаем
+          Что делаем.
+          <br />
+          И как.
         </h2>
         <p className="section-lead" data-reveal>
-          Каждая услуга расписана по шагам, чтобы вы заранее знали, что будет с ногтями.
+          Каждая услуга расписана по шагам, <b>чтобы вы заранее знали, что будет с ногтями.</b>
         </p>
       </div>
       <div className="wrap services__grid">

@@ -19,12 +19,17 @@ export function Works() {
   return (
     <section id="works" className="works" aria-labelledby="works-title">
       <div className="wrap works__head">
+        <p className="eyebrow" data-reveal>
+          Работы
+        </p>
         <h2 id="works-title" className="section-title" data-reveal>
-          Работы <span className="works__count">{works.length}</span>
+          Ваша идея.
+          <br />
+          Её руки.
         </h2>
         <p className="section-lead" data-reveal>
-          Свежие работы мастера. Если рядом с ногтями картинка, это мудборд: с такой идеей пришла клиентка, а на ногтях то, что из неё
-          получилось. Нажмите на фото, чтобы рассмотреть ближе.
+          <b>{works.length} свежих работ мастера.</b> Если рядом с ногтями картинка, это мудборд: с такой идеей пришла клиентка, а на
+          ногтях то, что из неё получилось. Нажмите на фото, чтобы рассмотреть ближе.
         </p>
       </div>
 
