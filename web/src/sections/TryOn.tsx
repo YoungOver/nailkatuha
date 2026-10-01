@@ -4,8 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { LacquerPicker } from '@/components/LacquerPicker'
 import { workSrc, works } from '@/content/works'
 import { lacquerStore } from '@/fx/lacquer'
-import type { TryOn as Engine } from '@/fx/tryon/engine'
-import type { Look } from '@/fx/tryon/nails2d'
+import type { TryOn as Engine, Look } from '@/fx/tryon/engine'
 
 type Mode = 'idle' | 'loading' | 'camera' | 'photo' | 'error'
 
@@ -14,7 +13,7 @@ const SAMPLE = works.find((w) => w.id === 14)!
 
 function look(): Look {
   const s = lacquerStore.get()
-  return { hex: s.lacquer.hex, finish: s.finish, shape: s.shape }
+  return { hex: s.lacquer.hex, finish: s.finish, shape: s.shape, length: s.length }
 }
 
 /**
@@ -63,9 +62,10 @@ export function TryOn() {
       await e.startCamera(video.current!)
       setMode('camera')
       setStatus('Покажите тыльную сторону ладони, пальцы вверх')
-      e.run(canvas.current!, look, (found) =>
-        setStatus(found ? 'Готово. Меняйте цвет, покрытие и форму' : 'Покажите тыльную сторону ладони, пальцы вверх'),
-      )
+      e.run(canvas.current!, look, (nails) => {
+        if (canvas.current) canvas.current.dataset.nails = String(nails)
+        setStatus(nails ? 'Готово. Меняйте цвет, покрытие и форму' : 'Покажите тыльную сторону ладони, пальцы вверх')
+      })
     } catch (err) {
       const denied = err instanceof DOMException && (err.name === 'NotAllowedError' || err.name === 'SecurityError')
       fail(denied ? 'Доступ к камере запрещён. Разрешите его в настройках браузера или загрузите фото руки.' : 'Камера недоступна. Загрузите фото руки или посмотрите пример.')
@@ -78,8 +78,9 @@ export function TryOn() {
       e.stop()
       still.current = image
       setMode('photo')
-      const hands = await e.photo(canvas.current!, image, look())
-      setStatus(hands ? 'Готово. Меняйте цвет, покрытие и форму' : 'Не вижу ногтей на фото. Нужна тыльная сторона ладони при хорошем свете.')
+      const nails = await e.photo(canvas.current!, image, look())
+      canvas.current!.dataset.nails = String(nails)
+      setStatus(nails ? 'Готово. Меняйте цвет, покрытие и форму' : 'Не вижу ногтей на фото. Нужна тыльная сторона ладони при хорошем свете.')
     } catch {
       fail('Не получилось открыть фото. Попробуйте другое, в формате JPG или PNG.')
     }
