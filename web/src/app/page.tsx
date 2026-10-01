@@ -15,7 +15,7 @@ export default function Home() {
     <>
       <NailMasks />
       <Header />
-      <main>
+      <main id="main" tabIndex={-1}>
         <Hero />
         <Works />
         <Reasons />

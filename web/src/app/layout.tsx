@@ -11,7 +11,7 @@ const body = Golos_Text({ subsets: ['latin', 'cyrillic'], variable: '--font-body
 export const metadata: Metadata = {
   title: 'nailkatuha: маникюр и nail art в Санкт-Петербурге',
   description:
-    'Маникюр, покрытие, наращивание и nail art у метро Проспект Большевиков. Запись онлайн по свободным окошкам, примерка дизайна на свои руки через камеру.',
+    'Маникюр, покрытие, наращивание и nail art у метро Проспект Большевиков. Цены, работы мастера и запись на свободное окошко через Telegram.',
   openGraph: {
     type: 'website',
     locale: 'ru_RU',
@@ -60,6 +60,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: lacquerBoot }} />
       </head>
       <body>
+        <a className="skip-link" href="#main">
+          К содержимому
+        </a>
         {children}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       </body>
