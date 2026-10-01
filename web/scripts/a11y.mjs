@@ -28,11 +28,12 @@ for (const path of ['/', '/portfolio/']) {
   for (const [w, h, mobile] of [[1440, 900, false], [390, 844, true]]) {
     const page = await browser.newPage({ viewport: { width: w, height: h }, isMobile: mobile, hasTouch: mobile })
     await page.goto(base + path, { waitUntil: 'networkidle' })
-    const height = await page.evaluate(() => document.documentElement.scrollHeight)
-    for (let y = 0; y < height; y += h) {
+    /* sections are laid out as they come near, so the page grows while it is scrolled: read the height every step */
+    for (let y = 0; y < (await page.evaluate(() => document.documentElement.scrollHeight - innerHeight)); y += h) {
       await page.evaluate((v) => scrollTo(0, v), y)
       await page.waitForTimeout(120)
     }
+    await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight))
     await page.waitForTimeout(1500)
     await page.addScriptTag({ path: axePath })
     const violations = await page.evaluate(async () => {

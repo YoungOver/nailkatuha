@@ -51,7 +51,11 @@ for (const [w, h, mobile] of VIEWPORTS) {
   await tab.waitForTimeout(4000)
   if (full) {
     /* a full-page capture paints beyond the viewport, where content-visibility would skip the sections */
-    await tab.addStyleTag({ content: '.section { content-visibility: visible !important; }' })
+    /* and scroll-driven reveals would freeze everything below the first screen in its hidden start state */
+    await tab.addStyleTag({
+      content:
+        ':is(.works, .tryon, .reasons, .services, .prices, .booking, .contacts) { content-visibility: visible !important; } * { animation-timeline: auto !important; animation: none !important; }',
+    })
     const height = await tab.evaluate(() => document.documentElement.scrollHeight)
     for (let y = 0; y < height; y += h * 0.8) {
       await tab.evaluate((v) => window.scrollTo(0, v), y)
