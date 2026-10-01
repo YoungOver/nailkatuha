@@ -1,6 +1,7 @@
 import { NailMasks } from '@/components/NailMasks'
 import { FileDust } from '@/fx/FileDust'
 import { Flow } from '@/fx/flow/Flow'
+import { Jumps } from '@/fx/Jumps'
 import { Booking } from '@/sections/Booking'
 import { Contacts } from '@/sections/Contacts'
 import { Footer } from '@/sections/Footer'
@@ -32,6 +33,7 @@ export default function Home() {
       </main>
       <Footer />
       <FileDust />
+      <Jumps />
     </>
   )
 }
