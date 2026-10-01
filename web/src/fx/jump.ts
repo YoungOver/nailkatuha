@@ -30,20 +30,32 @@ export function jumpTo(target: HTMLElement, smooth: boolean) {
 
   whenScrollable(() => {
     const behavior: ScrollBehavior = smooth && !reduced() ? 'smooth' : 'instant'
+    /* if the reader takes over the scroll, the jump must not pull the page back afterwards */
+    let interrupted = false
+    const interrupt = () => (interrupted = true)
+    const inputs = ['wheel', 'touchstart', 'keydown'] as const
+    for (const type of inputs) addEventListener(type, interrupt, { passive: true })
     target.scrollIntoView({ block: 'start', behavior })
-    let finished = false
-    const finish = () => {
-      if (finished) return
-      finished = true
-      removeEventListener('scrollend', finish)
+
+    /* the scroll is over once the position holds for a few frames: a slow phone may need seconds for a long way */
+    const start = scrollY
+    let last = start
+    let still = 0
+    let frames = 0
+    const watch = () => {
+      frames++
+      if (scrollY === last) still++
+      else still = 0
+      last = scrollY
+      /* a smooth scroll can take a few frames to start, so stillness counts only after it has moved */
+      const settled = still >= 6 && (scrollY !== start || frames > 30)
+      if (!settled) return void requestAnimationFrame(watch)
+      for (const type of inputs) removeEventListener(type, interrupt)
       const pad = parseFloat(getComputedStyle(root).scrollPaddingTop) || 0
-      if (Math.abs(target.getBoundingClientRect().top - pad) > 2) target.scrollIntoView({ block: 'start', behavior: 'instant' })
+      if (!interrupted && Math.abs(target.getBoundingClientRect().top - pad) > 2) target.scrollIntoView({ block: 'start', behavior: 'instant' })
       for (const s of opened) s.style.contentVisibility = ''
     }
-    if (behavior === 'smooth' && 'onscrollend' in window) {
-      addEventListener('scrollend', finish)
-      setTimeout(finish, 4000)
-    } else requestAnimationFrame(() => requestAnimationFrame(finish))
+    requestAnimationFrame(watch)
   })
 }
 
