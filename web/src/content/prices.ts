@@ -28,7 +28,11 @@ export function formatDuration(minutes: number): string {
 
 /** API names are lower-case fragments ("длина 1-2"); descriptions sometimes come wrapped in brackets. */
 export function tidy(text: string): string {
-  const t = text.trim().replace(/^\((.*)\)$/, '$1')
+  const t = text
+    .trim()
+    .replace(/^\((.*)\)$/, '$1')
+    .replace(/ \+(?=\S)/g, ' + ')
+    .replace(/(\d)см/g, '$1 см')
   return t ? t[0].toUpperCase() + t.slice(1) : t
 }
 

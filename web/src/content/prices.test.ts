@@ -21,6 +21,12 @@ describe('prices', () => {
     expect(tidy('')).toBe('')
   })
 
+  it('spaces a glued plus and a glued unit the way the rest of the list does', () => {
+    expect(tidy('Длина 8+ +дизайн')).toBe('Длина 8+ + дизайн')
+    expect(tidy('длина больше 8 (3,5см+)')).toBe('Длина больше 8 (3,5 см+)')
+    expect(tidy('снятие + покрытие + дизайн')).toBe('Снятие + покрытие + дизайн')
+  })
+
   it('groups by category order, items by item order', () => {
     const g = groupPrices(items)
     expect(g.map((c) => c.name)).toEqual(['Снятие', 'Покрытие'])
