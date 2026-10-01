@@ -1,6 +1,7 @@
 import { BufferGeometry, Float32BufferAttribute, Shape, type Vector2 } from 'three'
+import type { Shape as NailShape } from '../lacquer'
 
-export type NailShape = 'square' | 'almond' | 'stiletto' | 'coffin'
+export type { NailShape }
 
 export type NailSpec = { shape: NailShape; width: number; length: number }
 
@@ -16,12 +17,27 @@ function outlineShape(shape: NailShape, w: number, l: number): Shape {
   s.bezierCurveTo(-hw, -0.04 * w, hw, -0.04 * w, hw, h0)
 
   switch (shape) {
-    case 'square': {
-      const r = 0.1 * w
+    case 'square':
+    case 'squoval': {
+      const r = (shape === 'square' ? 0.1 : 0.32) * w
       s.lineTo(hw, l - r)
       s.quadraticCurveTo(hw, l, hw - r, l)
       s.lineTo(-hw + r, l)
       s.quadraticCurveTo(-hw, l, -hw, l - r)
+      break
+    }
+    case 'oval':
+      s.lineTo(hw, 0.55 * l)
+      s.bezierCurveTo(hw, 0.9 * l, 0.34 * w, l, 0, l)
+      s.bezierCurveTo(-0.34 * w, l, -hw, 0.9 * l, -hw, 0.55 * l)
+      break
+    case 'lipstick': {
+      /* one long diagonal from the long right corner down to the short left one, like a lipstick bullet */
+      const r = 0.12 * w
+      s.lineTo(hw, l - r)
+      s.quadraticCurveTo(hw, l, hw - r, l - 0.02 * l)
+      s.lineTo(-hw + r, 0.68 * l)
+      s.quadraticCurveTo(-hw, 0.64 * l, -hw, 0.6 * l)
       break
     }
     case 'almond':

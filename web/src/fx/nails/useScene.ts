@@ -36,7 +36,7 @@ function channel(offscreen: boolean): Send {
 
 function snapshot(): NailState {
   const s = lacquerStore.get()
-  return { hex: s.lacquer.hex, finish: s.finish, shape: s.shape }
+  return { hex: s.lacquer.hex, finish: s.finish, shape: s.shape, length: s.length }
 }
 
 let counter = 0

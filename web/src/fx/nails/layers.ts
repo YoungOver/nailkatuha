@@ -13,7 +13,7 @@ import {
 } from 'three'
 import type { Shape } from '../lacquer'
 import { buildNailGeometry } from './geometry'
-import { createLacquerMaterial, FINISH_LOOK } from './material'
+import { applyLook, createLacquerMaterial, FINISH_LOOK } from './material'
 import type { NailState } from './scene'
 import { LAYER_AT, LAYER_FADE } from './steps'
 import { buildStudio } from './studio'
@@ -161,15 +161,12 @@ export class LayersScene {
   }
 
   private applyFinish(state: NailState) {
-    const look = FINISH_LOOK[state.finish]
-    const m = this.colour.material
-    m.roughness = look.roughness
-    m.metalness = look.metalness
-    m.clearcoat = look.clearcoat
-    m.iridescence = look.iridescence
-    m.color.copy(new Color(state.hex)).multiplyScalar(look.shade)
-    this.colour.uniforms.uCat.value = look.cat
+    const u = this.colour.uniforms
+    u.uTo.value.set(state.hex)
+    u.uFrom.value.set(state.hex)
+    applyLook(this.colour.material, u, { ...FINISH_LOOK[state.finish] })
   }
+
 
   private geometry(shape: Shape) {
     let g = this.cache.get(shape)

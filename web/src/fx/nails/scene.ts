@@ -11,12 +11,16 @@ import {
   WebGLRenderer,
   type BufferGeometry,
 } from 'three'
-import type { Finish, Shape } from '../lacquer'
+import type { Finish, Length, Shape } from '../lacquer'
 import { buildNailGeometry } from './geometry'
 import { buildStudio } from './studio'
-import { createLacquerMaterial, FINISH_LOOK, type LacquerUniforms } from './material'
+import { applyLook, createLacquerMaterial, easeLook, FINISH_LOOK, type LacquerUniforms, type Look } from './material'
 
-export type NailState = { hex: string; finish: Finish; shape: Shape }
+export type NailState = { hex: string; finish: Finish; shape: Shape; length: Length }
+
+/* how much each shape and length stretches a tip, relative to a medium almond */
+export const SHAPE_REACH: Record<Shape, number> = { square: 0.92, squoval: 0.92, oval: 0.95, almond: 1, coffin: 1.04, lipstick: 1.05, stiletto: 1.15 }
+export const LENGTH_REACH: Record<Length, number> = { short: 0.72, medium: 1, long: 1.32 }
 
 type Finger = { x: number; y: number; angle: number; length: number; width: number }
 
@@ -48,9 +52,10 @@ export class NailScene {
   private meshes: Mesh[] = []
   private parts: { material: ReturnType<typeof createLacquerMaterial>['material']; uniforms: LacquerUniforms }[] = []
   private cache = new Map<string, BufferGeometry>()
-  private look: (typeof FINISH_LOOK)[Finish]
+  private look: Look
   private finish: Finish
   private shape: Shape
+  private length: Length
   private hex: string
   private pointer = { x: 0, y: 0 }
   private hovered = -1
@@ -77,6 +82,7 @@ export class NailScene {
 
     this.finish = state.finish
     this.shape = state.shape
+    this.length = state.length
     this.hex = state.hex
     this.look = { ...FINISH_LOOK[state.finish] }
 
@@ -87,7 +93,7 @@ export class NailScene {
       const holder = new Group()
       holder.position.set(f.x, f.y, 0)
       holder.rotation.z = MathUtils.degToRad(f.angle)
-      const mesh = new Mesh(this.geometryFor(i, state.shape), part.material)
+      const mesh = new Mesh(this.geometryFor(i), part.material)
       mesh.userData.index = i
       holder.add(mesh)
       this.group.add(holder)
@@ -138,9 +144,10 @@ export class NailScene {
       }
       this.hex = next.hex
     }
-    if (next.shape !== this.shape) {
+    if (next.shape !== this.shape || next.length !== this.length) {
       this.shape = next.shape
-      this.meshes.forEach((m, i) => (m.geometry = this.geometryFor(i, next.shape)))
+      this.length = next.length
+      this.meshes.forEach((m, i) => (m.geometry = this.geometryFor(i)))
       this.pop = 0.9
     }
     this.finish = next.finish
@@ -159,18 +166,10 @@ export class NailScene {
     this.pop = MathUtils.damp(this.pop, 1, 9, dt)
     g.scale.setScalar(this.pop * Math.min(1, viewW / SET_WIDTH, viewH / SET_HEIGHT))
 
-    const goal = FINISH_LOOK[this.finish]
-    const l = this.look
-    const k = 1 - Math.exp(-dt * 6)
-    for (const key of Object.keys(l) as (keyof typeof l)[]) l[key] += (goal[key] - l[key]) * k
+    easeLook(this.look, this.finish, 1 - Math.exp(-dt * 6))
 
     this.parts.forEach(({ material: m, uniforms: u }, i) => {
-      m.roughness = l.roughness
-      m.metalness = l.metalness
-      m.clearcoat = l.clearcoat
-      m.iridescence = l.iridescence
-      m.color.copy(u.uTo.value).multiplyScalar(l.shade)
-      u.uCat.value = l.cat
+      applyLook(m, u, this.look)
       u.uBand.value = MathUtils.damp(u.uBand.value, 0.5 + this.pointer.x * 0.6, 6, dt)
       u.uTime.value = t
       if (u.uProgress.value < 1.2) u.uProgress.value = Math.min(1.2, u.uProgress.value + dt * 1.6)
@@ -188,12 +187,13 @@ export class NailScene {
     this.renderer.dispose()
   }
 
-  private geometryFor(i: number, shape: Shape) {
-    const key = `${shape}:${i}`
+  private geometryFor(i: number) {
+    const { shape, length: size } = this
+    const key = `${shape}:${size}:${i}`
     let g = this.cache.get(key)
     if (!g) {
       const f = FINGERS[i]
-      const length = shape === 'stiletto' ? f.length * 1.18 : shape === 'square' ? f.length * 0.9 : f.length
+      const length = f.length * SHAPE_REACH[shape] * LENGTH_REACH[size]
       g = buildNailGeometry({ shape, width: f.width, length })
       this.cache.set(key, g)
     }

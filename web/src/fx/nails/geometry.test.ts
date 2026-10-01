@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { SHAPES } from '../lacquer'
 import { buildNailGeometry, nailOutline } from './geometry'
 
 describe('nail geometry', () => {
@@ -42,5 +43,24 @@ describe('nail geometry', () => {
     }
     expect(tipWidth('stiletto')).toBeLessThan(0.15)
     expect(tipWidth('square')).toBeGreaterThan(0.6)
+  })
+
+  it('builds every shape of the picker to the requested width and length', () => {
+    for (const { id } of SHAPES) {
+      const g = buildNailGeometry({ shape: id, width: 1, length: 1.5 })
+      const b = g.boundingBox!
+      expect(b.max.x - b.min.x, id).toBeCloseTo(1, 1)
+      expect(b.max.y - b.min.y, id).toBeCloseTo(1.5, 1)
+      expect(g.getIndex()!.count, id).toBeGreaterThan(1000)
+    }
+  })
+
+  it('slants the free edge for lipstick and keeps squoval corners softer than square', () => {
+    const top = (shape: 'lipstick' | 'square' | 'squoval', side: 1 | -1) => {
+      const pts = nailOutline(shape, 1, 1.6).filter((p) => p.x * side > 0.4)
+      return Math.max(...pts.map((p) => p.y))
+    }
+    expect(top('lipstick', 1) - top('lipstick', -1)).toBeGreaterThan(0.3)
+    expect(top('squoval', 1)).toBeLessThan(top('square', 1))
   })
 })
