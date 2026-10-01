@@ -143,6 +143,33 @@
     transform: scaleX(var(--p, 0));
   }
 
+  /* phone upright: the scene takes exactly the room left above the text, so a taller text never covers the nail */
+  @media (max-width: 899px) and (orientation: portrait) {
+    .layers__stage {
+      display: flex;
+      flex-direction: column;
+      padding-top: 4.25rem;
+    }
+
+    .layers__canvas {
+      position: relative;
+      inset: auto;
+      height: auto;
+      flex: 1 1 0;
+      min-height: 0;
+    }
+
+    /* absolute, because Safari does not treat a child's 100% height inside a flexed box as definite */
+    .layers__canvas canvas {
+      position: absolute;
+      inset: 0;
+    }
+
+    .layers__copy {
+      flex: none;
+    }
+  }
+
   @media (min-width: 900px) {
     .layers__canvas {
       inset: 0 0 0 38%;

@@ -7,10 +7,12 @@
     transition: background-color 0.4s var(--ease-out);
   }
 
+  /* dense enough that text scrolling underneath never reads through the logo and the menu button */
   .site-header[data-scrolled],
   .site-header[data-open] {
-    background: rgb(7 6 9 / 0.66);
-    backdrop-filter: blur(18px) saturate(1.4);
+    background: rgb(7 6 9 / 0.86);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    backdrop-filter: blur(20px) saturate(1.4);
     box-shadow: 0 1px 0 var(--color-hairline);
   }
 

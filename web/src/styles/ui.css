@@ -218,4 +218,11 @@
     border-radius: 50%;
     will-change: transform, opacity;
   }
+
+  /* the quiet line above a section title, as on Apple's product pages: sentence case, muted, no tracking */
+  .eyebrow {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--color-mute);
+  }
 }

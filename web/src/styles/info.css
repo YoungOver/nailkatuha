@@ -180,89 +180,6 @@
     }
   }
 
-  .booking {
-    padding-block: clamp(3rem, 6vw, 5rem);
-  }
-
-  .booking__panel {
-    display: grid;
-    gap: 2.5rem;
-    padding: clamp(1.75rem, 4vw, 4rem);
-    border-radius: 2.25rem;
-    background:
-      radial-gradient(80% 120% at 0% 0%, color-mix(in oklab, var(--color-lacquer) 32%, transparent), transparent 60%),
-      radial-gradient(60% 80% at 100% 100%, color-mix(in oklab, var(--color-lacquer) 16%, transparent), transparent 70%),
-      rgb(16 13 20 / 0.82);
-    box-shadow: inset 0 0 0 1px var(--color-hairline);
-    backdrop-filter: blur(16px);
-  }
-
-  .booking__intro {
-    display: grid;
-    justify-items: start;
-    gap: 1.25rem;
-  }
-
-  .booking__steps {
-    list-style: none;
-    display: grid;
-    counter-reset: step;
-  }
-
-  .booking__step {
-    position: relative;
-    padding: 0.3rem 0 1.8rem 3.6rem;
-    counter-increment: step;
-  }
-
-  .booking__step:last-child {
-    padding-bottom: 0;
-  }
-
-  /* the steps really are a sequence, so they are numbered and joined by one thread */
-  .booking__step::before {
-    content: counter(step);
-    position: absolute;
-    left: 0;
-    top: 0;
-    display: grid;
-    place-items: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    font-weight: 650;
-    color: var(--on-lacquer, #1a0710);
-    background: var(--color-lacquer);
-  }
-
-  .booking__step:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    left: 1.25rem;
-    top: 2.8rem;
-    bottom: 0.3rem;
-    width: 1.5px;
-    background: linear-gradient(var(--color-lacquer), var(--color-hairline));
-  }
-
-  .booking__step h3 {
-    font-size: 1.2rem;
-    font-weight: 650;
-    margin-bottom: 0.25rem;
-  }
-
-  .booking__step p {
-    color: rgb(245 240 235 / 0.72);
-  }
-
-  @media (min-width: 900px) {
-    .booking__panel {
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-      align-items: center;
-      gap: clamp(3rem, 6vw, 6rem);
-    }
-  }
-
   .contacts__grid {
     display: grid;
     gap: 2.5rem;
@@ -324,20 +241,41 @@
     box-shadow: inset 0 0 0 1px var(--color-hairline);
   }
 
+  /* the widget has no dark style: the whole map is inverted and the hue turned back, so water stays blue */
   .map__canvas {
     position: absolute;
     inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    filter: invert(0.92) hue-rotate(180deg) brightness(0.95) contrast(0.9) saturate(0.7);
   }
 
-  /* Yandex 2.1 has no dark style, so the tile layer is inverted and the hue turned back */
-  .map [class*='ground-pane'] {
-    filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.88) saturate(0.6);
+  /* only touch screens get the cover; a mouse wheel over the map scrolls the page anyway */
+  .map__cover {
+    display: none;
   }
 
-  .map__fallback {
-    position: absolute;
-    inset: auto 1.25rem 1.25rem;
-    color: var(--color-mute);
+  @media (pointer: coarse) {
+    .map__cover {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: end center;
+      padding-bottom: 1rem;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      color: var(--color-milk);
+    }
+
+    .map__cover span {
+      padding: 0.55rem 1rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      background: rgb(7 6 9 / 0.78);
+      box-shadow: inset 0 0 0 1px var(--color-hairline);
+    }
   }
 
   @media (min-width: 900px) {
