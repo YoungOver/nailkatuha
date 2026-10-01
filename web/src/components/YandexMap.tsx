@@ -1,11 +1,14 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { lacquerStore } from '@/fx/lacquer'
+
+type Placemark = { options: { set(key: string, value: unknown): void } }
 
 type Ymaps = {
   ready(cb: () => void): void
   Map: new (el: HTMLElement, opts: object, extra?: object) => { geoObjects: { add(o: unknown): void }; behaviors: { disable(n: string): void }; destroy(): void }
-  Placemark: new (coords: readonly number[], props: object, opts: object) => unknown
+  Placemark: new (coords: readonly number[], props: object, opts: object) => Placemark
 }
 
 let loader: Promise<Ymaps> | null = null
@@ -35,6 +38,13 @@ export function YandexMap({ coords, label }: { coords: readonly [number, number]
     if (!el) return
     let map: { destroy(): void } | null = null
     let cancelled = false
+    let offStore = () => {}
+    /* the map draws its logo as an empty link; give every such link a name for screen readers */
+    const nameLinks = () =>
+      el.querySelectorAll('a').forEach((a) => {
+        if (!a.textContent?.trim() && !a.hasAttribute('aria-label')) a.setAttribute('aria-label', 'Яндекс Карты')
+      })
+    const links = new MutationObserver(nameLinks)
     const io = new IntersectionObserver(
       ([e]) => {
         if (!e.isIntersecting) return
@@ -44,8 +54,12 @@ export function YandexMap({ coords, label }: { coords: readonly [number, number]
             if (cancelled) return
             const m = new ymaps.Map(el, { center: coords, zoom: 16, controls: ['zoomControl'] }, { suppressMapOpenBlock: true })
             m.behaviors.disable('scrollZoom')
-            const color = getComputedStyle(document.documentElement).getPropertyValue('--lacquer').trim() || '#ff4f8b'
-            m.geoObjects.add(new ymaps.Placemark(coords, { hintContent: label }, { preset: 'islands#dotIcon', iconColor: color }))
+            /* the pin wears the lacquer chosen in the hero, like the rest of the site */
+            const pin = new ymaps.Placemark(coords, { hintContent: label }, { preset: 'islands#dotIcon', iconColor: lacquerStore.get().lacquer.hex })
+            m.geoObjects.add(pin)
+            offStore = lacquerStore.subscribe((s) => pin.options.set('iconColor', s.lacquer.hex))
+            links.observe(el, { childList: true, subtree: true })
+            nameLinks()
             map = m
             setState('ready')
           })
@@ -57,6 +71,8 @@ export function YandexMap({ coords, label }: { coords: readonly [number, number]
     return () => {
       cancelled = true
       io.disconnect()
+      links.disconnect()
+      offStore()
       map?.destroy()
     }
   }, [coords, label])

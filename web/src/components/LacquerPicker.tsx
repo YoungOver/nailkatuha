@@ -84,40 +84,40 @@ export function LacquerPicker() {
         ))}
       </div>
       <div className="lacquer-picker__row">
-      <div role="radiogroup" aria-label="Форма" className="shape-switch" onKeyDown={onShapeKey}>
-        {SHAPES.map((f, i) => (
-          <button
-            key={f.id}
-            type="button"
-            role="radio"
-            aria-checked={i === shapeIndex}
-            aria-label={f.name}
-            title={f.name}
-            tabIndex={i === shapeIndex ? 0 : -1}
-            className="shape-switch__item"
-            onClick={() => pickShape(i)}
-          >
-            <svg viewBox="0 0 16 23" aria-hidden="true">
-              <path d={SHAPE_ICON[f.id]} />
-            </svg>
-          </button>
-        ))}
-      </div>
-      <div role="radiogroup" aria-label="Покрытие" className="finish-switch" onKeyDown={onFinishKey}>
-        {FINISHES.map((f, i) => (
-          <button
-            key={f.id}
-            type="button"
-            role="radio"
-            aria-checked={i === finishIndex}
-            tabIndex={i === finishIndex ? 0 : -1}
-            className="finish-switch__item"
-            onClick={() => pickFinish(i)}
-          >
-            {f.name}
-          </button>
-        ))}
-      </div>
+        <div role="radiogroup" aria-label="Форма" className="shape-switch" onKeyDown={onShapeKey}>
+          {SHAPES.map((f, i) => (
+            <button
+              key={f.id}
+              type="button"
+              role="radio"
+              aria-checked={i === shapeIndex}
+              aria-label={f.name}
+              title={f.name}
+              tabIndex={i === shapeIndex ? 0 : -1}
+              className="shape-switch__item"
+              onClick={() => pickShape(i)}
+            >
+              <svg viewBox="0 0 16 23" aria-hidden="true">
+                <path d={SHAPE_ICON[f.id]} />
+              </svg>
+            </button>
+          ))}
+        </div>
+        <div role="radiogroup" aria-label="Покрытие" className="finish-switch" onKeyDown={onFinishKey}>
+          {FINISHES.map((f, i) => (
+            <button
+              key={f.id}
+              type="button"
+              role="radio"
+              aria-checked={i === finishIndex}
+              tabIndex={i === finishIndex ? 0 : -1}
+              className="finish-switch__item"
+              onClick={() => pickFinish(i)}
+            >
+              {f.name}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   )
