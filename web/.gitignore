@@ -43,3 +43,6 @@ next-env.d.ts
 # try-on binaries are copied or downloaded by scripts/assets.mjs
 /public/mediapipe/
 /public/models/
+
+# local one-off diagnostics
+/scripts/_*.mjs
