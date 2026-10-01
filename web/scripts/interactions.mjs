@@ -24,6 +24,11 @@ const check = (name, ok, extra = '') => results.push(`${ok ? 'ok  ' : 'FAIL'} ${
 
 await page.goto(base + '/', { waitUntil: 'networkidle' })
 
+await page.keyboard.press('Tab')
+check('first Tab shows the skip link', await page.evaluate(() => document.activeElement?.classList.contains('skip-link') && document.activeElement.getBoundingClientRect().top >= 0))
+await page.keyboard.press('Enter')
+check('skip link moves focus past the header', await page.evaluate(() => document.activeElement?.id === 'main'))
+
 await page.mouse.move(700, 400)
 await page.waitForTimeout(400)
 check('nail-file cursor visible on desktop', await page.locator('.nail-file[data-visible]').count() === 1)
@@ -62,6 +67,13 @@ check('lacquer survives a reload without flash', kept === '#9c8cff', kept)
 await page.locator('.sound-toggle').click()
 check('sound toggle is pressed', (await page.locator('.sound-toggle').getAttribute('aria-pressed')) === 'true')
 
+const old = await browser.newPage({ viewport: { width: 1280, height: 800 } })
+await old.addInitScript(() => delete HTMLCanvasElement.prototype.transferControlToOffscreen)
+await old.goto(base + '/', { waitUntil: 'networkidle' })
+await old.waitForSelector('.showcase[data-ready]', { timeout: 15000 }).catch(() => null)
+check('3D falls back to the page thread without OffscreenCanvas', (await old.locator('.showcase[data-ready]').count()) === 1)
+await old.close()
+
 const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
 await mobile.goto(base + '/', { waitUntil: 'networkidle' })
 check('no file cursor on touch', await mobile.locator('.nail-file[data-visible]').count() === 0)
@@ -70,6 +82,15 @@ check('mobile menu opens', await mobile.locator('#mobile-menu').isVisible())
 await mobile.locator('#mobile-menu a', { hasText: 'Цены' }).click()
 await mobile.waitForTimeout(600)
 check('mobile menu closes after choosing a section', !(await mobile.locator('#mobile-menu').isVisible()))
+await mobile.waitForTimeout(1200)
+const pricesTop = await mobile.evaluate(() => Math.round(document.getElementById('prices').getBoundingClientRect().top))
+check('menu link lands on its section under the header', pricesTop >= 0 && pricesTop <= 96, `top ${pricesTop}px`)
+
+await page.goto(base + '/', { waitUntil: 'networkidle' })
+await page.locator('.site-header a[href$="#contacts"]').first().click()
+await page.waitForTimeout(1500)
+const contactsTop = await page.evaluate(() => Math.round(document.getElementById('contacts').getBoundingClientRect().top))
+check('header link to the last section lands exactly', contactsTop >= 0 && contactsTop <= 96, `top ${contactsTop}px`)
 
 await page.goto(base + '/portfolio/', { waitUntil: 'networkidle' })
 check('portfolio shows all 18 works', (await page.locator('.portfolio__item').count()) === 18)

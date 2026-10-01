@@ -2,7 +2,7 @@ import { createReadStream, existsSync, mkdirSync, statSync } from 'node:fs'
 import { createServer } from 'node:http'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { chromium } from 'playwright-core'
+import { chromium, firefox, webkit } from 'playwright-core'
 
 const root = fileURLToPath(new URL('../out/', import.meta.url))
 const outDir = fileURLToPath(new URL('../../docs/shots/', import.meta.url))
@@ -35,12 +35,14 @@ const server = createServer((req, res) => {
 const base = `http://127.0.0.1:${server.address().port}`
 
 mkdirSync(outDir, { recursive: true })
-const browser = await chromium.launch({ channel: 'chrome' })
+/* ENGINE=firefox or ENGINE=webkit runs the same pass in Gecko or in Safari's engine */
+const engine = process.env.ENGINE ?? 'chrome'
+const browser = engine === 'firefox' ? await firefox.launch() : engine === 'webkit' ? await webkit.launch() : await chromium.launch({ channel: 'chrome' })
 let problems = 0
 
 for (const [w, h, mobile] of VIEWPORTS) {
   if (only && !only.includes(`${w}x${h}`)) continue
-  const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, isMobile: mobile, hasTouch: mobile, reducedMotion: 'no-preference' })
+  const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, ...(engine === 'firefox' ? {} : { isMobile: mobile }), hasTouch: mobile, reducedMotion: 'no-preference' })
   const tab = await ctx.newPage()
   const errors = []
   tab.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
@@ -48,6 +50,8 @@ for (const [w, h, mobile] of VIEWPORTS) {
   await tab.goto(base + page, { waitUntil: 'networkidle' })
   await tab.waitForTimeout(4000)
   if (full) {
+    /* a full-page capture paints beyond the viewport, where content-visibility would skip the sections */
+    await tab.addStyleTag({ content: '.section { content-visibility: visible !important; }' })
     const height = await tab.evaluate(() => document.documentElement.scrollHeight)
     for (let y = 0; y < height; y += h * 0.8) {
       await tab.evaluate((v) => window.scrollTo(0, v), y)
@@ -59,7 +63,7 @@ for (const [w, h, mobile] of VIEWPORTS) {
   }
   const overflow = await tab.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
   const slug = page === '/' ? '' : page.replace(/\//g, '_').replace(/_+$/, '') + '-'
-  const name = `${slug}${w}x${h}${full ? '-full' : ''}.png`
+  const name = `${engine === 'chrome' ? '' : engine + '-'}${slug}${w}x${h}${full ? '-full' : ''}.png`
   await tab.screenshot({ path: join(outDir, name), fullPage: full })
   const issues = []
   if (overflow > 0) issues.push(`horizontal overflow ${overflow}px`)
