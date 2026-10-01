@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Onest } from 'next/font/google'
 import { prices } from '@/content/prices'
-import { LACQUERS, textOn } from '@/fx/lacquer'
+import { PAINT_KEY } from '@/fx/lacquer'
 import { studio } from '@/content/studio'
 import './globals.css'
 
@@ -50,7 +50,7 @@ const jsonLd = {
 }
 
 /* Applies the saved lacquer before first paint so a returning visitor never sees the default flash. */
-const lacquerBoot = `try{var m=${JSON.stringify(Object.fromEntries(LACQUERS.map((l) => [l.id, [l.hex, textOn(l.hex)]])))};var v=m[localStorage.getItem('nailkatuha:lacquer')];if(v){var r=document.documentElement;r.style.setProperty('--lacquer',v[0]);r.style.setProperty('--on-lacquer',v[1]);}}catch(e){}`
+const lacquerBoot = `try{var v=JSON.parse(localStorage.getItem('${PAINT_KEY}'));if(v){var r=document.documentElement;r.style.setProperty('--lacquer',v[0]);r.style.setProperty('--on-lacquer',v[1]);}}catch(e){}`
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
