@@ -41,7 +41,9 @@ self.onmessage = (e: MessageEvent<ToFlow>) => {
     flow.resize(m.w, m.h)
     raf(loop)
   } else if (m.type === 'resize') {
+    /* resizing clears the canvas: draw at once so the background never blinks black */
     flow?.resize(m.w, m.h)
+    flow?.draw(clock, 0)
   } else if (m.type === 'state') {
     flow?.set(m.state)
   } else if (m.type === 'visible') {

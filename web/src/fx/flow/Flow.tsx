@@ -32,7 +32,8 @@ export function Flow() {
     if (!canvas) return
     lacquerStore.restore()
     const slow = matchMedia('(prefers-reduced-motion: reduce)').matches
-    const size = () => ({ w: innerWidth * SCALE, h: innerHeight * SCALE })
+    /* the canvas is 100lvh tall in CSS, so its box does not change when a phone's address bar slides away */
+    const size = () => ({ w: canvas.clientWidth * SCALE, h: canvas.clientHeight * SCALE })
     let send: (m: ToFlow, t?: Transferable[]) => void = () => {}
     let stop = () => {}
 
@@ -64,7 +65,10 @@ export function Flow() {
       }
       raf = requestAnimationFrame(loop)
       send = (m) => {
-        if (m.type === 'resize') flow.resize(m.w, m.h)
+        if (m.type === 'resize') {
+          flow.resize(m.w, m.h)
+          flow.draw(clock, 0)
+        }
         if (m.type === 'state') flow.set(m.state)
         if (m.type === 'visible') visible = m.visible
       }
@@ -72,7 +76,15 @@ export function Flow() {
     }
     canvas.dataset.ready = ''
 
-    const onResize = () => send({ type: 'resize', ...size() })
+    let last = size()
+    const onResize = () => {
+      const next = size()
+      if (Math.abs(next.w - last.w) < 1 && Math.abs(next.h - last.h) < 1) return
+      last = next
+      send({ type: 'resize', ...next })
+    }
+    const resizes = new ResizeObserver(onResize)
+    resizes.observe(canvas)
     let ticking = 0
     const onScroll = () => {
       if (ticking) return
@@ -94,13 +106,12 @@ export function Flow() {
     const onVisibility = () => send({ type: 'visible', visible: !document.hidden })
     const offStore = lacquerStore.subscribe((s) => send({ type: 'state', state: { a: hexToRgb(s.lacquer.hex), b: partner(s.lacquer.hex) } }))
 
-    window.addEventListener('resize', onResize)
     window.addEventListener('scroll', onScroll, { passive: true })
     if (matchMedia('(hover: hover) and (pointer: fine)').matches) window.addEventListener('pointermove', onMove, { passive: true })
     document.addEventListener('visibilitychange', onVisibility)
     return () => {
       offStore()
-      window.removeEventListener('resize', onResize)
+      resizes.disconnect()
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('pointermove', onMove)
       document.removeEventListener('visibilitychange', onVisibility)
