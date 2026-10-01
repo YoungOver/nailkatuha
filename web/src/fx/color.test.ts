@@ -23,7 +23,7 @@ describe('colour math', () => {
   })
 
   it('lifts a shade that would vanish on the dark page until text in it is readable', () => {
-    const page = '#070609'
+    const page = '#000000'
     for (const hex of ['#141216', '#000000', '#5b2a5e', '#6d0f24', '#ff4f8b']) {
       expect(contrast(accentFor(hex), page), hex).toBeGreaterThanOrEqual(4.5)
     }

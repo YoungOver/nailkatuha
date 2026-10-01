@@ -1,6 +1,6 @@
 /* Colour helpers for the lacquer picker: hex, the HSV wheel and WCAG contrast. */
 
-export const PAGE = '#070609'
+export const PAGE = '#000000'
 
 export function normalizeHex(input: string): string | null {
   let s = input.trim().replace(/^#/, '').toLowerCase()
