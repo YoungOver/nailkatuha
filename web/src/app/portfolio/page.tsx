@@ -16,7 +16,7 @@ export default function PortfolioPage() {
     <>
       <NailMasks />
       <Header />
-      <main className="portfolio-page">
+      <main id="main" tabIndex={-1} className="portfolio-page">
         <Portfolio />
       </main>
       <Footer />
