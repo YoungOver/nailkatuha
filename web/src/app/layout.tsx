@@ -1,12 +1,11 @@
 import type { Metadata, Viewport } from 'next'
-import { Golos_Text, Jost } from 'next/font/google'
+import { Onest } from 'next/font/google'
 import { prices } from '@/content/prices'
 import { LACQUERS, textOn } from '@/fx/lacquer'
 import { studio } from '@/content/studio'
 import './globals.css'
 
-const display = Jost({ subsets: ['latin', 'cyrillic'], variable: '--font-display', display: 'swap' })
-const body = Golos_Text({ subsets: ['latin', 'cyrillic'], variable: '--font-body', display: 'swap' })
+const sans = Onest({ subsets: ['latin', 'cyrillic'], variable: '--font-onest', display: 'swap' })
 
 export const metadata: Metadata = {
   title: 'nailkatuha: маникюр и nail art в Санкт-Петербурге',
@@ -24,7 +23,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
-  themeColor: '#0D0B10',
+  themeColor: '#070609',
   colorScheme: 'dark',
 }
 
@@ -55,7 +54,7 @@ const lacquerBoot = `try{var m=${JSON.stringify(Object.fromEntries(LACQUERS.map(
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ru" className={`${display.variable} ${body.variable}`} suppressHydrationWarning>
+    <html lang="ru" className={sans.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: lacquerBoot }} />
       </head>
