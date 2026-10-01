@@ -4,11 +4,11 @@ const base = process.env.NEXT_PUBLIC_BASE ?? ''
 
 export function Footer() {
   return (
-    <footer className="footer safe-x">
+    <footer className="footer wrap">
       <div className="footer__cols">
         <nav aria-label="Разделы сайта">
           <a href={`${base}/#works`}>Работы</a>
-          <a href={`${base}/portfolio/`}>Портфолио</a>
+          <a href={`${base}/#tryon`}>Примерка</a>
           <a href={`${base}/#prices`}>Цены</a>
           <a href={`${base}/#booking`}>Записаться</a>
         </nav>
@@ -20,10 +20,12 @@ export function Footer() {
           </a>
         </div>
       </div>
-      <p className="footer__word font-display" aria-hidden="true">
+      <p className="footer__word" aria-hidden="true">
         nailkatuha
       </p>
-      <p className="footer__legal">© 2026 nailkatuha. Маникюр и nail art в <span className="whitespace-nowrap">Санкт-Петербурге</span>.</p>
+      <p className="footer__legal">
+        © 2026 nailkatuha. Маникюр и nail art в <span className="whitespace-nowrap">Санкт-Петербурге</span>.
+      </p>
     </footer>
   )
 }

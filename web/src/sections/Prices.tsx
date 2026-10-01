@@ -5,19 +5,19 @@ const high = Math.max(...prices.map((p) => p.priceRub))
 
 export function Prices() {
   return (
-    <section id="prices" className="section prices" aria-labelledby="prices-title">
-      <div className="safe-x prices__head">
-        <h2 id="prices-title" className="section__title font-display">
+    <section id="prices" className="prices" aria-labelledby="prices-title">
+      <div className="wrap prices__head">
+        <h2 id="prices-title" className="section-title" data-reveal>
           Цены
         </h2>
-        <p className="prices__range font-display">
+        <p className="prices__range" data-reveal>
           от {formatRub(low)} до {formatRub(high)}
         </p>
       </div>
 
-      <div className="safe-x prices__groups">
+      <div className="wrap prices__groups">
         {priceGroups.map((g) => (
-          <div key={g.name} className="prices__group">
+          <div key={g.name} className="prices__group" data-reveal>
             <h3 className="prices__category">{g.name}</h3>
             <ul>
               {g.items.map((p) => (
@@ -27,9 +27,8 @@ export function Prices() {
                       {tidy(p.name)}
                       {p.description && <span className="price-line__desc">{tidy(p.description)}</span>}
                     </span>
-                    <span className="price-line__leader" aria-hidden="true" />
                     <span className="price-line__value">
-                      <span className="price-line__price font-display">{formatRub(p.priceRub)}</span>
+                      <span className="price-line__price">{formatRub(p.priceRub)}</span>
                       <span className="price-line__time">{formatDuration(p.durationMin)}</span>
                     </span>
                   </a>
@@ -39,7 +38,7 @@ export function Prices() {
           </div>
         ))}
       </div>
-      <p className="safe-x prices__note">Снятие старого покрытия уже входит в покрытие и наращивание. Нажмите на строку, чтобы записаться на эту услугу.</p>
+      <p className="wrap prices__note">Снятие старого покрытия уже входит в покрытие и наращивание. Нажмите на строку, чтобы записаться на эту услугу.</p>
     </section>
   )
 }

@@ -6,10 +6,10 @@ const route = `https://yandex.ru/maps/?rtext=~${lat},${lon}&rtt=mt`
 
 export function Contacts() {
   return (
-    <section id="contacts" className="section contacts" aria-labelledby="contacts-title">
-      <div className="safe-x contacts__grid">
-        <div className="contacts__info">
-          <h2 id="contacts-title" className="section__title font-display">
+    <section id="contacts" className="contacts" aria-labelledby="contacts-title">
+      <div className="wrap contacts__grid">
+        <div className="contacts__info" data-reveal>
+          <h2 id="contacts-title" className="section-title">
             Как добраться
           </h2>
           <address className="contacts__address">
@@ -37,7 +37,9 @@ export function Contacts() {
           </ul>
           <p className="contacts__note">{studio.metaNote}</p>
         </div>
-        <YandexMap coords={studio.coords} label={`nailkatuha, ${studio.address}`} />
+        <div data-reveal="scale">
+          <YandexMap coords={studio.coords} label={`nailkatuha, ${studio.address}`} />
+        </div>
       </div>
     </section>
   )

@@ -8,7 +8,7 @@ const base = process.env.NEXT_PUBLIC_BASE ?? ''
 
 const links = [
   { href: `${base}/#works`, label: 'Работы' },
-  { href: `${base}/portfolio/`, label: 'Портфолио' },
+  { href: `${base}/#tryon`, label: 'Примерка' },
   { href: `${base}/#prices`, label: 'Цены' },
   { href: `${base}/#contacts`, label: 'Контакты' },
 ]
@@ -45,8 +45,8 @@ export function Header() {
 
   return (
     <header className="site-header" data-scrolled={scrolled || undefined} data-open={open || undefined}>
-      <div className="site-header__bar safe-x">
-        <a href={`${base}/`} className="site-header__logo font-display" aria-label="nailkatuha, на главную">
+      <div className="site-header__bar wrap">
+        <a href={`${base}/`} className="site-header__logo" aria-label="nailkatuha, на главную">
           nail<span>katuha</span>
         </a>
 
@@ -76,8 +76,8 @@ export function Header() {
         </button>
       </div>
 
-      <div id="mobile-menu" className="site-header__sheet safe-x" hidden={!open}>
-        <nav aria-label="Главное меню" className="font-display">
+      <div id="mobile-menu" className="site-header__sheet wrap" hidden={!open}>
+        <nav aria-label="Главное меню">
           {links.map((l) => (
             <a key={l.href} href={l.href} onClick={close}>
               {l.label}

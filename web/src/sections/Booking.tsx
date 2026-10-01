@@ -9,25 +9,27 @@ const STEPS = [
 
 export function Booking() {
   return (
-    <section id="booking" className="section booking" aria-labelledby="booking-title">
-      <div className="safe-x booking__grid">
-        <div className="booking__intro">
-          <h2 id="booking-title" className="booking__title font-display">
-            Запишитесь на окошко
-          </h2>
-          <p className="booking__lead">{studio.bookingLead}</p>
-          <LacquerButton href={studio.bot} target="_blank" rel="noopener">
-            Выбрать окошко в Telegram
-          </LacquerButton>
+    <section id="booking" className="booking" aria-labelledby="booking-title">
+      <div className="wrap">
+        <div className="booking__panel" data-reveal="scale">
+          <div className="booking__intro">
+            <h2 id="booking-title" className="section-title">
+              Запишитесь на окошко
+            </h2>
+            <p className="section-lead">{studio.bookingLead}</p>
+            <LacquerButton href={studio.bot} target="_blank" rel="noopener">
+              Выбрать окошко в Telegram
+            </LacquerButton>
+          </div>
+          <ol className="booking__steps">
+            {STEPS.map((s) => (
+              <li key={s.title} className="booking__step">
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+              </li>
+            ))}
+          </ol>
         </div>
-        <ol className="booking__steps">
-          {STEPS.map((s) => (
-            <li key={s.title} className="booking__step">
-              <h3 className="font-display">{s.title}</h3>
-              <p>{s.text}</p>
-            </li>
-          ))}
-        </ol>
       </div>
     </section>
   )

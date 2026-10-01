@@ -9,10 +9,10 @@ const wordTones = ['tone-pink', 'tone-amber', 'tone-violet', 'tone-rose']
 export function Hero() {
   return (
     <section id="top" className="hero">
-      <div className="hero__grid safe-x">
+      <div className="hero__inner wrap">
         <div className="hero__copy">
-          {/* whole words rise out of their line in CSS, from the very first paint, so kerning stays intact and nothing flashes */}
-          <h1 className="hero__title font-display">
+          {/* whole words rise out of their line in CSS, from the very first paint, so nothing flashes after load */}
+          <h1 className="hero__title">
             {studio.heroWords.map((word, i) => (
               <span key={word} className={`hero__word ${wordTones[i]}`} style={{ '--i': i } as CSSProperties}>
                 <span className="hero__word-text">
@@ -25,6 +25,13 @@ export function Hero() {
           <p className="hero__lead">{studio.heroLead}</p>
           <div className="hero__actions">
             <LacquerButton href="#booking">Записаться на окошко</LacquerButton>
+            <a className="ghost-btn" href="#tryon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2" />
+                <circle cx="12" cy="12" r="3.2" />
+              </svg>
+              Примерить на свои руки
+            </a>
           </div>
         </div>
 
@@ -32,11 +39,10 @@ export function Hero() {
           <Showcase />
           <LacquerPicker />
         </div>
-
-        <p className="hero__place">
-          {studio.city}, {studio.address}, метро {studio.metro.name}
-        </p>
       </div>
+      <a className="hero__scroll" href="#layers">
+        Листайте
+      </a>
     </section>
   )
 }
