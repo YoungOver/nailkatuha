@@ -22,7 +22,7 @@ export function Prices() {
             <ul>
               {g.items.map((p) => (
                 <li key={p.id}>
-                  <a className="price-line" href={`?service=${p.id}#booking`}>
+                  <a className="price-line" href="#booking" data-service={p.id}>
                     <span className="price-line__name">
                       {tidy(p.name)}
                       {p.description && <span className="price-line__desc">{tidy(p.description)}</span>}
