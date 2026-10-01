@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer className="footer safe-x">
       <div className="footer__cols">
-        <nav aria-label="Разделы">
+        <nav aria-label="Разделы сайта">
           <a href={`${base}/#works`}>Работы</a>
           <a href={`${base}/portfolio/`}>Портфолио</a>
           <a href={`${base}/#prices`}>Цены</a>
@@ -23,7 +23,7 @@ export function Footer() {
       <p className="footer__word font-display" aria-hidden="true">
         nailkatuha
       </p>
-      <p className="footer__legal">© 2026 nailkatuha. Маникюр и nail art в Санкт-Петербурге.</p>
+      <p className="footer__legal">© 2026 nailkatuha. Маникюр и nail art в <span className="whitespace-nowrap">Санкт-Петербурге</span>.</p>
     </footer>
   )
 }

@@ -1,7 +1,4 @@
-'use client'
-
-import { gsap } from 'gsap'
-import { useEffect, useRef } from 'react'
+import type { CSSProperties } from 'react'
 import { LacquerButton } from '@/components/LacquerButton'
 import { LacquerPicker } from '@/components/LacquerPicker'
 import { studio } from '@/content/studio'
@@ -10,31 +7,14 @@ import { Showcase } from '@/fx/nails/Showcase'
 const wordTones = ['tone-pink', 'tone-amber', 'tone-violet', 'tone-rose']
 
 export function Hero() {
-  const titleRef = useRef<HTMLHeadingElement>(null)
-
-  useEffect(() => {
-    const title = titleRef.current
-    if (!title) return
-    /* whole words rise out of their line, so kerning inside each word stays intact */
-    const intro = gsap.from(title.querySelectorAll('.hero__word-text'), {
-      yPercent: 105,
-      duration: 1.05,
-      ease: 'expo.out',
-      stagger: 0.09,
-      delay: 0.1,
-    })
-    return () => {
-      intro.kill()
-    }
-  }, [])
-
   return (
     <section id="top" className="hero">
       <div className="hero__grid safe-x">
         <div className="hero__copy">
-          <h1 ref={titleRef} className="hero__title font-display">
+          {/* whole words rise out of their line in CSS, from the very first paint, so kerning stays intact and nothing flashes */}
+          <h1 className="hero__title font-display">
             {studio.heroWords.map((word, i) => (
-              <span key={word} className={`hero__word ${wordTones[i]}`}>
+              <span key={word} className={`hero__word ${wordTones[i]}`} style={{ '--i': i } as CSSProperties}>
                 <span className="hero__word-text">
                   {word}
                   <span className="hero__dot">.</span>

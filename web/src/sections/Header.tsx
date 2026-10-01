@@ -50,7 +50,7 @@ export function Header() {
           nail<span>katuha</span>
         </a>
 
-        <nav aria-label="Разделы" className="site-header__nav">
+        <nav aria-label="Главное меню" className="site-header__nav">
           {links.map((l) => (
             <a key={l.href} href={l.href}>
               {l.label}
@@ -77,7 +77,7 @@ export function Header() {
       </div>
 
       <div id="mobile-menu" className="site-header__sheet safe-x" hidden={!open}>
-        <nav aria-label="Разделы" className="font-display">
+        <nav aria-label="Главное меню" className="font-display">
           {links.map((l) => (
             <a key={l.href} href={l.href} onClick={close}>
               {l.label}
